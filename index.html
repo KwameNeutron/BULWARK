@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bulwark">
+<meta name="theme-color" content="#14171C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Bulwark — Hernia-Safe Strength</title>
+<style>
+:root{
+  --bg:#14171C; --panel:#1C2129; --panel2:#232A34; --ink:#E9EDF2; --mut:#8B96A5;
+  --amber:#F0A63C; --amber2:#FFC46B; --good:#7FB88B; --bad:#E06C5F; --line:#2C3441;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);height:100%}
+body{padding-bottom:env(safe-area-inset-bottom)}
+.wrap{max-width:520px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px 96px}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:22px 0 10px}
+.sub{color:var(--mut);font-size:13px;margin-top:2px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.card.sel{border-color:var(--amber);background:linear-gradient(180deg,rgba(240,166,60,.07),var(--panel))}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.badge{font-family:var(--mono);font-size:11px;color:var(--amber);border:1px solid rgba(240,166,60,.4);border-radius:99px;padding:2px 8px;white-space:nowrap}
+.badge.gray{color:var(--mut);border-color:var(--line)}
+.badge.good{color:var(--good);border-color:rgba(127,184,139,.4)}
+button{font-family:var(--sans);border:none;border-radius:12px;cursor:pointer;font-weight:700}
+.btn{background:var(--amber);color:#14171C;padding:13px 16px;font-size:15px;width:100%}
+.btn:disabled{opacity:.35}
+.btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.small{width:auto;padding:8px 14px;font-size:13px}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid rgba(224,108,95,.4)}
+/* Breathing banner */
+.breath{background:linear-gradient(90deg,rgba(240,166,60,.12),rgba(240,166,60,.03));border:1px solid rgba(240,166,60,.3);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--amber2);margin:12px 0;display:flex;gap:8px;align-items:center}
+.breath b{color:var(--amber)}
+/* Round pills */
+.rounds{display:flex;gap:8px;margin:14px 0}
+.rpill{flex:1;text-align:center;padding:10px 4px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-weight:700;font-size:13px}
+.rpill.on{background:var(--panel2);border-color:var(--amber);color:var(--ink)}
+.rpill.done{color:var(--good);border-color:rgba(127,184,139,.4)}
+.rpill .tag{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;margin-top:2px;color:var(--amber)}
+/* Exercise log card */
+.ex{margin-bottom:10px}
+.ex .name{font-size:16px;font-weight:800}
+.ex .meta{font-size:12px;color:var(--mut);margin-top:2px}
+.logrow{display:flex;gap:8px;margin-top:12px;align-items:stretch}
+.step{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.step .lab{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.step .val{font-family:var(--mono);font-size:22px;font-weight:700;margin:2px 0}
+.stepbtns{display:flex;justify-content:center;gap:6px}
+.stepbtns button{background:var(--panel);border:1px solid var(--line);color:var(--ink);width:38px;height:32px;border-radius:9px;font-size:17px}
+.logbtn{background:var(--amber);color:#14171C;border-radius:12px;padding:0 18px;font-size:14px;min-width:74px}
+.logbtn.done{background:var(--panel2);color:var(--good);border:1px solid rgba(127,184,139,.4)}
+.fail{border-color:var(--amber)!important;box-shadow:0 0 0 1px rgba(240,166,60,.25)}
+.failtag{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.12em}
+/* Ring */
+.ringwrap{display:flex;align-items:center;gap:14px;margin:6px 0 2px}
+.ring{width:64px;height:64px;flex:none}
+.ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+.ring .bgc{stroke:var(--line)}
+.ring .fgc{stroke:var(--amber);transition:stroke-dashoffset .4s}
+.ring text{fill:var(--ink);font-family:var(--mono);font-size:15px;font-weight:700}
+/* Timer */
+.timer{position:fixed;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom));max-width:488px;margin:0 auto;background:var(--panel2);border:1px solid var(--amber);border-radius:14px;padding:12px 16px;display:none;align-items:center;justify-content:space-between;z-index:40;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.timer.on{display:flex}
+.timer .t{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--amber)}
+/* Nav */
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,23,28,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;color:var(--mut);padding:12px 0 10px;font-size:11px;font-weight:600;display:flex;flex-direction:column;gap:3px;align-items:center;border-radius:0}
+nav button.on{color:var(--amber)}
+nav .ic{font-size:19px;line-height:1}
+/* Setup */
+.opt{cursor:pointer}
+.opt .why{font-size:13px;color:var(--mut);margin-top:6px;line-height:1.45}
+.opt .cues{font-size:12px;color:var(--mut);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);line-height:1.5}
+.opt .cues b{color:var(--amber2);font-weight:600}
+/* History */
+.sess{font-family:var(--mono);font-size:13px}
+.spark{width:100%;height:44px;margin-top:6px}
+.spark polyline{fill:none;stroke:var(--amber);stroke-width:2}
+.spark circle{fill:var(--amber)}
+.big{font-family:var(--mono);font-size:26px;font-weight:700}
+/* Info */
+.flag{border-left:3px solid var(--bad);padding-left:11px;margin:10px 0;font-size:14px;line-height:1.5}
+.flag.warn{border-color:var(--amber)}
+.flag b{display:block}
+.flag span{color:var(--mut);font-size:13px}
+select,input[type=number]{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:15px;font-family:var(--mono)}
+textarea{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:var(--mono);font-size:11px;min-height:90px}
+.hide{display:none!important}
+.fade{animation:f .25s ease}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<div class="timer" id="timer">
+  <div><div style="font-size:10px;letter-spacing:.12em;color:var(--mut)">REST</div><div class="t" id="tval">1:15</div></div>
+  <button class="btn small ghost" onclick="skipRest()">Skip</button>
+</div>
+
+<nav id="nav">
+  <button data-v="train" onclick="go('train')"><span class="ic">⬤</span>Train</button>
+  <button data-v="history" onclick="go('history')"><span class="ic">▲</span>History</button>
+  <button data-v="info" onclick="go('info')"><span class="ic">✚</span>Info</button>
+  <button data-v="setup" onclick="go('setup')"><span class="ic">⚙</span>Setup</button>
+</nav>
+
+<script>
+/* ============ EXERCISE LIBRARY ============ */
+/* measure: reps | secs | steps   bw: weight optional */
+const SLOTS = [
+{id:'core',title:'Anti-Rotation Core',n:1,desc:'The centerpiece. Trains the deep abdominal wall to resist pressure without spiking it.',options:[
+ {id:'pallof',name:'Pallof Press',equip:'Cable',target:'Deep core · obliques',measure:'reps',bw:false,startW:15,startR:12,
+  why:'Resists rotation without crunching or breath-holding — strengthens the wall at low intra-abdominal pressure.',
+  cues:'<b>Form:</b> Half-kneeling or split stance beside the cable, handle at chest. Press straight out, ribs down, hips square. <b>Breath:</b> Gentle pelvic-floor lift, exhale as you press out. <b>Progress:</b> +5 lb on the stack once set 3 passes 15 clean reps per side.'},
+ {id:'deadbug',name:'Dead Bug',equip:'Floor',target:'Transversus abdominis',measure:'reps',bw:true,startW:0,startR:10,
+  why:'Low back stays glued to the floor, so pressure stays low while the deep core learns to brace.',
+  cues:'<b>Form:</b> Low back pressed flat. Lower opposite arm and leg slowly, 3 seconds down. <b>Breath:</b> Exhale as limbs extend, never hold. <b>Progress:</b> Slower tempo, then hold a light med ball overhead.'},
+ {id:'birddog',name:'Bird Dog',equip:'Floor',target:'Spinal stabilizers',measure:'reps',bw:true,startW:0,startR:10,
+  why:'Builds trunk stiffness in neutral spine — near-zero pressure spike, very post-op friendly.',
+  cues:'<b>Form:</b> Reach long, not high. Hips level, no rocking. 2-second hold at full reach. <b>Breath:</b> Exhale on the reach. <b>Progress:</b> Extend holds to 5 s, then add a light band.'},
+ {id:'sideplank',name:'Side Plank',equip:'Floor',target:'Obliques · lateral wall',measure:'secs',bw:true,startW:0,startR:25,
+  why:'Loads the flank isometrically without a pressure spike. Start from the knees.',
+  cues:'<b>Form:</b> Elbow under shoulder, body one straight line. Knees-down version first. <b>Breath:</b> Steady breathing throughout — never hold. <b>Progress:</b> +10 s, then feet-stacked full version.'}]},
+{id:'hinge',title:'Hip Hinge & Glutes',n:2,desc:'Hip power with the load kept low and the breath kept moving.',options:[
+ {id:'glutebridge',name:'Glute Bridge',equip:'Floor · DB ≤25',target:'Glutes · hips',measure:'reps',bw:true,startW:0,startR:14,
+  why:'Hips do the work while the abdomen stays relaxed. Groin-friendly hip extension.',
+  cues:'<b>Form:</b> Drive through heels, squeeze 1 s at top, ribs down. <b>Breath:</b> Exhale on the way up. <b>Progress:</b> Single DB (≤25) on hips, then single-leg.'},
+ {id:'pullthrough',name:'Cable Pull-Through',equip:'Cable',target:'Glutes · hamstrings',measure:'reps',bw:false,startW:25,startR:12,
+  why:'Teaches the hinge with load behind you — minimal strain on the front wall.',
+  cues:'<b>Form:</b> Face away from stack, rope between legs, push hips back, soft knees, flat back. <b>Breath:</b> Exhale as hips drive forward. <b>Progress:</b> +5–10 lb when set 3 exceeds 15.'},
+ {id:'dbrdl',name:'DB Romanian Deadlift',equip:'DBs ≤25',target:'Hamstrings · glutes',measure:'reps',bw:false,startW:20,startR:10,
+  why:'Light hinge pattern; weights stay below the waist and the breath keeps flowing.',
+  cues:'<b>Form:</b> DBs slide down the thighs, flat back, hips back until hamstrings pull. <b>Breath:</b> Exhale standing up. Never grind. <b>Progress:</b> To 25s, then 3-second lowers (load is capped — earn tempo).'}]},
+{id:'pull',title:'Pull',n:3,desc:'Upper back strength from supported positions that keep bracing demand honest.',options:[
+ {id:'seatedrow',name:'Seated Cable Row',equip:'Machine',target:'Mid-back · lats',measure:'reps',bw:false,startW:45,startR:12,
+  why:'Seated and supported — a strong pull with pressure kept low.',
+  cues:'<b>Form:</b> Chest tall, pull to lower ribs, squeeze the blades. No torso heave. <b>Breath:</b> Exhale as you pull. <b>Progress:</b> +5 lb when set 3 passes 15.'},
+ {id:'latpulldown',name:'Lat Pulldown',equip:'Machine',target:'Lats · upper back',measure:'reps',bw:false,startW:55,startR:12,
+  why:'Vertical pull, seated with thighs locked — overhead strength without overhead dumbbells.',
+  cues:'<b>Form:</b> Slight lean back, pull to collarbone, control up. <b>Breath:</b> Exhale on the pull down. <b>Progress:</b> +5 lb increments.'},
+ {id:'dbrow',name:'Bench-Supported DB Row',equip:'Bench · DB ≤25',target:'Lats · mid-back',measure:'reps',bw:false,startW:25,startR:10,
+  why:'Knee and hand on the bench remove the bracing demand from your midsection.',
+  cues:'<b>Form:</b> Flat back, row to the hip, no twist. <b>Breath:</b> Exhale on the pull. <b>Progress:</b> Load is capped at 25 — progress with 3-second lowers and reps.'}]},
+{id:'push',title:'Supported Push',n:4,desc:'Press strength without overhead dumbbell work or breath-holding.',options:[
+ {id:'machinepress',name:'Machine Chest Press',equip:'Machine',target:'Chest · triceps',measure:'reps',bw:false,startW:50,startR:12,
+  why:'Back fully supported, feet planted — pressing strength with the easiest possible breathing.',
+  cues:'<b>Form:</b> Shoulder blades set back and down, smooth full range. <b>Breath:</b> Exhale as you press. <b>Progress:</b> +5–10 lb when set 3 passes 15.'},
+ {id:'inclinepushup',name:'Incline Push-Up',equip:'Bench',target:'Chest · core',measure:'reps',bw:true,startW:0,startR:12,
+  why:'The bench angle scales the load; far easier to breathe through than floor reps.',
+  cues:'<b>Form:</b> Hands on bench, body one straight line, full lockout. <b>Breath:</b> Exhale on the push. <b>Progress:</b> Lower the incline over months, then floor.'},
+ {id:'cablepress',name:'Standing Cable Press',equip:'Cable',target:'Chest · anti-rotation',measure:'reps',bw:false,startW:20,startR:12,
+  why:'Split-stance single-arm press doubles as core anti-rotation work at light loads.',
+  cues:'<b>Form:</b> Split stance, hips square, press straight ahead per side. <b>Breath:</b> Exhale on the press. <b>Progress:</b> +5 lb per side, keep hips dead still.'}]},
+{id:'lower',title:'Legs · Adductors · Carry',n:5,desc:'Lower body and the muscles that back up the inguinal region.',options:[
+ {id:'suitcasecarry',name:'Suitcase Carry',equip:'KB or DB ≤25',target:'Obliques · grip · gait',measure:'steps',bw:false,startW:25,startR:35,
+  why:'Walking tall with one loaded side teaches the flank to hold the wall shut under real life.',
+  cues:'<b>Form:</b> Weight in one hand, stand dead level — no lean. Walk tall, switch sides. <b>Breath:</b> Normal steady breathing, never hold. <b>Progress:</b> Add steps first, heavier kettlebell only if you stay level.'},
+ {id:'gobletsquat',name:'Goblet Squat',equip:'DB ≤25',target:'Quads · glutes',measure:'reps',bw:false,startW:20,startR:12,
+  why:'Weight braced at the chest keeps the squat upright and the pressure moderate.',
+  cues:'<b>Form:</b> Elbows inside knees at the bottom, heels down. <b>Breath:</b> Exhale standing up. <b>Progress:</b> Load capped at 25 — progress with 2-s pauses at the bottom.'},
+ {id:'splitsquat',name:'Split Squat / Step-Up',equip:'BW → DBs ≤25',target:'Single-leg strength',measure:'reps',bw:true,startW:0,startR:9,
+  why:'Single-leg work builds real strength at half the spinal and abdominal load.',
+  cues:'<b>Form:</b> Torso tall, back knee kisses the floor (or step to a low bench). <b>Breath:</b> Exhale driving up. <b>Progress:</b> Add DBs at your sides, 10 → 25 lb.'},
+ {id:'copenhagen',name:'Copenhagen Plank (short)',equip:'Bench',target:'Adductors · groin',measure:'secs',bw:true,startW:0,startR:12,
+  why:'Directly feeds the adductors that support the inguinal region. Short lever only — skip on any right-side twinge.',
+  cues:'<b>Form:</b> Side plank with the top KNEE on the bench (short lever), hips level. <b>Breath:</b> Steady breathing. <b>Progress:</b> +5 s. Stop immediately at any groin pull.'}]}
+];
+const EX = {}; SLOTS.forEach(s=>s.options.forEach(o=>{o.slot=s.id;EX[o.id]=o;}));
+
+/* ============ STATE ============ */
+const store = {
+  get(k,d){try{const v=localStorage.getItem('bw.'+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){localStorage.setItem('bw.'+k,JSON.stringify(v))}
+};
+let prefs = store.get('prefs',{rest:75,picks:null});
+let log   = store.get('log',[]);        // [{date, entries:{exId:[{w,r},{w,r},{w,r}]}}]
+let active= store.get('active',null);   // {date, entries:{}}
+let view  = prefs.picks ? 'train' : 'setup';
+let round = 1;
+let tempPicks = {};
+let restInt=null, restLeft=0;
+
+/* ============ HELPERS ============ */
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+const fdate=d=>new Date(d+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+const unit=e=>e.measure==='secs'?'sec':e.measure==='steps'?'steps/side':'reps';
+function lastEntry(exId){
+  for(let i=log.length-1;i>=0;i--){ if(log[i].entries[exId]) return log[i].entries[exId]; }
+  return null;
+}
+function defaultsFor(exId,setIdx){
+  const e=EX[exId], prev=lastEntry(exId);
+  if(prev && prev[setIdx]) return {w:prev[setIdx].w, r:prev[setIdx].r};
+  if(prev && prev[prev.length-1]) return {w:prev[prev.length-1].w, r:prev[prev.length-1].r};
+  return {w:e.startW, r:e.startR};
+}
+function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
+
+/* ============ NAV ============ */
+function go(v){ view=v; render(); }
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+  $('nav').style.display = (view==='setup' && !prefs.picks) ? 'none':'flex';
+  const r={train:rTrain,history:rHistory,info:rInfo,setup:rSetup}[view];
+  $('app').innerHTML=r();
+  $('app').classList.remove('fade'); void $('app').offsetWidth; $('app').classList.add('fade');
+}
+
+/* ============ SETUP ============ */
+function rSetup(){
+  tempPicks = {...(prefs.picks||{})};
+  let h=`<h1>Bulwark</h1><p class="sub">Hernia-safe strength · pick one move per slot. Set it and forget it — you can change picks here anytime.</p>`;
+  SLOTS.forEach(s=>{
+    h+=`<h2>Slot ${s.n} — ${s.title}</h2><p class="sub" style="margin-bottom:10px">${s.desc}</p>`;
+    s.options.forEach(o=>{
+      const sel = tempPicks[s.id]===o.id;
+      h+=`<div class="card opt ${sel?'sel':''}" id="opt-${o.id}" onclick="pick('${s.id}','${o.id}')">
+        <div class="row"><div><div class="name" style="font-size:15px;font-weight:800">${o.name}</div>
+        <div class="meta" style="font-size:12px;color:var(--mut)">${o.target}</div></div>
+        <span class="badge gray">${o.equip}</span></div>
+        <div class="why">${o.why}</div>
+        <div class="cues">${o.cues}</div></div>`;
+    });
+  });
+  h+=`<h2>Rest between exercises</h2><div class="card"><div class="row">
+      <span style="font-size:14px">Circuit rest timer</span>
+      <select id="restSel" onchange="prefs.rest=+this.value;store.set('prefs',prefs)">
+        ${[60,75,90,120].map(x=>`<option value="${x}" ${prefs.rest===x?'selected':''}>${x}s</option>`).join('')}
+      </select></div></div>
+      <div style="height:10px"></div>
+      <button class="btn" id="saveBtn" onclick="savePicks()" ${Object.keys(tempPicks).length===5?'':'disabled'}>Save my 5</button>
+      ${prefs.picks?`<div style="height:8px"></div><button class="btn danger" onclick="wipe()">Erase all data</button>`:''}`;
+  return h;
+}
+function pick(slot,id){
+  tempPicks[slot]=id;
+  SLOTS.find(s=>s.id===slot).options.forEach(o=>$('opt-'+o.id).classList.toggle('sel',o.id===id));
+  $('saveBtn').disabled = Object.keys(tempPicks).length!==5;
+}
+function savePicks(){ prefs.picks=tempPicks; store.set('prefs',prefs); go('train'); }
+function wipe(){ if(confirm('Erase all workouts and settings?')){localStorage.clear();location.reload();} }
+
+/* ============ TRAIN ============ */
+function ensureActive(){
+  if(!active || active.date!==today()){ active={date:today(),entries:{}}; store.set('active',active); }
+}
+function setLogged(exId,setIdx){ return active && active.date===today() && active.entries[exId] && active.entries[exId][setIdx]; }
+function roundDone(rIdx){ return Object.values(prefs.picks).every(id=>setLogged(id,rIdx)); }
+function totalLogged(){ let n=0; Object.values(prefs.picks).forEach(id=>{for(let i=0;i<3;i++) if(setLogged(id,i)) n++;}); return n; }
+
+function rTrain(){
+  ensureActive();
+  const done=totalLogged(), pct=done/15;
+  const already = log.some(s=>s.date===today());
+  const circ=2*Math.PI*26, off=circ*(1-pct);
+  let h=`<div class="row"><div><h1>Today</h1><p class="sub">${fdate(today())} · 3 rounds × 5 moves · ~${Math.round((prefs.rest+45)*15/60)} min</p></div>
+    <svg class="ring" viewBox="0 0 64 64"><circle class="bgc" cx="32" cy="32" r="26"/>
+    <circle class="fgc" cx="32" cy="32" r="26" stroke-dasharray="${circ}" stroke-dashoffset="${off}" transform="rotate(-90 32 32)"/>
+    <text x="32" y="37" text-anchor="middle">${done}/15</text></svg></div>`;
+  h+=`<div class="breath">〜 <span><b>Exhale through the effort.</b> Never hold your breath. Gentle pelvic-floor lift before each rep.</span></div>`;
+  h+=`<div class="rounds">${[0,1,2].map(i=>{
+    const d=roundDone(i);
+    return `<button class="rpill ${round===i+1?'on':''} ${d?'done':''}" onclick="round=${i+1};render()">Round ${i+1}${i===2?'<span class="tag">TO FAILURE ✦</span>':''}</button>`;
+  }).join('')}</div>`;
+  const rIdx=round-1;
+  Object.values(prefs.picks).forEach(id=>{
+    const e=EX[id], logged=setLogged(id,rIdx);
+    const d = logged ? active.entries[id][rIdx] : defaultsFor(id,rIdx);
+    const failCls = rIdx===2?'fail':'';
+    h+=`<div class="card ex ${failCls}">
+      <div class="row"><div><div class="name">${e.name}</div><div class="meta">${e.target} · ${e.equip}${rIdx===2?' · <span class="failtag">LAST SET — GO TO FAILURE</span>':''}</div></div>
+      ${logged?`<span class="badge good">✓ ${d.w>0?d.w+'×':''}${d.r}</span>`:''}</div>
+      ${logged?'':`<div class="logrow">
+        ${e.bw && d.w===0 ? `<div class="step"><div class="lab">Load</div><div class="val">BW</div><div class="stepbtns"><button onclick="adj('${id}','w',5)">＋</button></div></div>`
+        : `<div class="step"><div class="lab">Weight lb</div><div class="val" id="w-${id}">${d.w}</div><div class="stepbtns"><button onclick="adj('${id}','w',-5)">−</button><button onclick="adj('${id}','w',5)">＋</button></div></div>`}
+        <div class="step"><div class="lab">${unit(e)}</div><div class="val" id="r-${id}">${d.r}</div><div class="stepbtns"><button onclick="adj('${id}','r',-1)">−</button><button onclick="adj('${id}','r',1)">＋</button></div></div>
+        <button class="logbtn" onclick="logSet('${id}',${rIdx})">Log</button>
+      </div>`}</div>`;
+  });
+  if(done===15 && !already) h+=`<button class="btn" onclick="finish()">Finish & save session</button>`;
+  else if(already) h+=`<div class="card" style="text-align:center;color:var(--good);font-weight:700">Session saved ✓</div>`;
+  return h;
+}
+function adj(id,f,d){
+  const el=$((f==='w'?'w-':'r-')+id); if(!el) { // BW → adding weight converts to numeric
+    if(f==='w'){ const e=EX[id]; e._tmpW=(e._tmpW||0)+5; render(); } return;
+  }
+  let v=parseInt(el.textContent)+d; if(v<0)v=0; el.textContent=v;
+}
+function logSet(id,rIdx){
+  ensureActive();
+  const e=EX[id];
+  const wEl=$('w-'+id), rEl=$('r-'+id);
+  const w=wEl?parseInt(wEl.textContent):(e._tmpW||0);
+  const r=rEl?parseInt(rEl.textContent):0;
+  if(!active.entries[id]) active.entries[id]=[];
+  active.entries[id][rIdx]={w,r};
+  store.set('active',active); vibrate(30);
+  startRest(); render();
+}
+function finish(){
+  log=log.filter(s=>s.date!==today());
+  log.push({date:active.date,entries:active.entries});
+  store.set('log',log); active=null; store.set('active',null);
+  round=1; vibrate([40,60,40]); render();
+}
+/* rest timer */
+function startRest(){
+  clearInterval(restInt); restLeft=prefs.rest;
+  $('timer').classList.add('on'); tick();
+  restInt=setInterval(()=>{restLeft--; if(restLeft<=0){skipRest(); vibrate(80);} else tick();},1000);
+}
+function tick(){ $('tval').textContent=Math.floor(restLeft/60)+':'+String(restLeft%60).padStart(2,'0'); }
+function skipRest(){ clearInterval(restInt); $('timer').classList.remove('on'); }
+
+/* ============ HISTORY ============ */
+function rHistory(){
+  if(!log.length) return `<h1>History</h1><p class="sub">No sessions yet. Your saved circuits will land here, newest first.</p>`;
+  let h=`<h1>History</h1><p class="sub">${log.length} session${log.length>1?'s':''} · data lives on this phone only</p>`;
+  h+=`<h2>Progress — failure set</h2>`;
+  Object.values(prefs.picks||{}).forEach(id=>{
+    const e=EX[id];
+    const pts=log.filter(s=>s.entries[id]).map(s=>{const sets=s.entries[id];const f=sets[2]||sets[sets.length-1];return {d:s.date,v:f.r,w:f.w};});
+    if(!pts.length) return;
+    const last=pts[pts.length-1];
+    const vals=pts.slice(-8).map(p=>p.v), mx=Math.max(...vals,1), mn=Math.min(...vals,0);
+    const W=300,H=40;
+    const xy=vals.map((v,i)=>[vals.length===1?W/2:i*(W/(vals.length-1)), H-4-((v-mn)/(mx-mn||1))*(H-10)]);
+    h+=`<div class="card"><div class="row"><div><div style="font-weight:800">${e.name}</div>
+      <div class="sub">${unit(e)} on set 3, last ${vals.length}</div></div>
+      <div class="big">${last.w>0?last.w+'×':''}${last.v}</div></div>
+      <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <polyline points="${xy.map(p=>p.join(',')).join(' ')}"/>
+      <circle cx="${xy[xy.length-1][0]}" cy="${xy[xy.length-1][1]}" r="3.5"/></svg></div>`;
+  });
+  h+=`<h2>Sessions</h2>`;
+  [...log].reverse().forEach(s=>{
+    const lines=Object.entries(s.entries).map(([id,sets])=>{
+      const e=EX[id]; if(!e) return '';
+      return `<div class="row" style="margin-top:6px"><span>${e.name}</span><span class="sess">${sets.map(x=>(x.w>0?x.w+'×':'')+x.r).join(' · ')}</span></div>`;
+    }).join('');
+    h+=`<div class="card"><div style="font-weight:800">${fdate(s.date)}</div>${lines}</div>`;
+  });
+  h+=`<h2>Backup</h2><div class="card">
+    <p class="sub" style="margin-bottom:8px">Copy this JSON somewhere safe, or paste a backup below and import.</p>
+    <textarea id="io">${esc(JSON.stringify({prefs,log}))}</textarea>
+    <div style="height:8px"></div><button class="btn ghost" onclick="importIO()">Import pasted backup</button></div>`;
+  return h;
+}
+function importIO(){
+  try{const d=JSON.parse($('io').value);
+    if(d.prefs&&d.log){prefs=d.prefs;log=d.log;store.set('prefs',prefs);store.set('log',log);alert('Imported ✓');render();}
+    else alert('That doesn\u2019t look like a Bulwark backup.');
+  }catch(e){alert('Invalid JSON.');}
+}
+
+/* ============ INFO ============ */
+function rInfo(){
+  return `<h1>The rules</h1>
+  <div class="breath">〜 <span><b>One breathing rule beats every exercise choice:</b> exhale through the hard part of every rep, with a gentle pelvic-floor lift. A held breath is a pressure spike aimed at the exact spot you're protecting.</span></div>
+  <h2>Straight talk</h2>
+  <div class="card"><p style="font-size:14px;line-height:1.55">No exercise reverses or repairs a hernia — a defect in the wall is mechanical. What training <b>can</b> do: keep symptoms mild, strengthen everything around the canal, keep your body weight down, and make you a better surgical candidate whenever that day comes. Watchful waiting is a legitimate, studied strategy for minimally symptomatic hernias — but most men do eventually cross over to surgery, so think of this as buying quality years, not a cure.</p></div>
+  <h2>Lifestyle levers that matter as much as the gym</h2>
+  <div class="card" style="font-size:14px;line-height:1.7">
+  · Keep body weight in check — belly pressure is constant load<br>
+  · Never strain on the toilet — fiber, water, don't hold breath<br>
+  · Treat chronic cough / allergies aggressively<br>
+  · No smoking — it degrades the tissue you're relying on<br>
+  · Lift heavy things by exhaling and keeping loads close</div>
+  <h2>Stop the session, call the surgeon</h2>
+  <div class="flag warn"><b>New or growing bulge on the right</b><span>Especially one that appears during a lift.</span></div>
+  <div class="flag warn"><b>Sharp groin pain during a rep</b><span>Or soreness that lasts more than 24 hours after a session.</span></div>
+  <div class="flag warn"><b>Anything new at the left repair site</b><span>Pain, swelling, or pulling at 2–6 months out gets a call, not a guess.</span></div>
+  <h2>Emergency room, now</h2>
+  <div class="flag"><b>A bulge that won't push back in + severe pain</b><span>With nausea, vomiting, fever, or skin redness over the site — signs of incarceration or strangulation. This is a same-hour problem, not a same-week one.</span></div>
+  <h2>Session math</h2>
+  <div class="card" style="font-size:14px;line-height:1.6">5 moves × 3 rounds = 15 sets. At ~45 s of work and ${prefs.rest} s of rest, that's ~${Math.round((prefs.rest+45)*15/60)} minutes plus a 5-minute bike or treadmill warm-up. Rounds 1–2 leave 2–3 reps in the tank; round 3 goes to clean-form failure. When set 3 beats the target by 3+ reps two sessions running, nudge the load.</div>`;
+}
+
+/* ============ BOOT ============ */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+render();
+</script>
+</body>
+</html>
