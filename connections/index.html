@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Connections">
+<meta name="theme-color" content="#15171D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Connections</title>
+<style>
+:root{
+  --bg:#15171D; --panel:#1D2028; --panel2:#252935; --ink:#ECEEF3; --mut:#8E95A6;
+  --acc:#F2846B; --acc2:#FFAE98; --good:#7FC4A0; --warn:#F0C25C; --bad:#E5686A; --line:#2D3240;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100%}
+.wrap{max-width:540px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:6px}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+h2 .n{font-family:var(--mono);color:var(--acc);letter-spacing:0}
+.sub{color:var(--mut);font-size:14px;margin-top:3px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
+.empty{color:var(--mut);font-size:14px;line-height:1.5;text-align:center;padding:22px 14px;border:1px dashed var(--line);border-radius:16px}
+button{font-family:var(--sans);border:none;border-radius:12px;cursor:pointer;font-weight:700;color:inherit}
+.btn{background:var(--acc);color:#1A1214;padding:13px 16px;font-size:15px;width:100%}
+.btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.small{width:auto;padding:8px 13px;font-size:13px}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid rgba(229,104,106,.4)}
+.btn:disabled{opacity:.4}
+.add{background:var(--acc);color:#1A1214;width:44px;height:44px;border-radius:50%;font-size:26px;line-height:1;flex:none}
+
+/* Person row */
+.p{display:flex;align-items:center;gap:12px;cursor:pointer}
+.av{width:44px;height:44px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#16181E}
+.p .info{flex:1;min-width:0}
+.p .nm{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p .meta{font-size:13px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{font-size:11px;font-weight:700;border-radius:99px;padding:3px 9px;white-space:nowrap;border:1px solid var(--line);color:var(--mut)}
+.pill.bad{color:var(--bad);border-color:rgba(229,104,106,.45)}
+.pill.warn{color:var(--warn);border-color:rgba(240,194,92,.45)}
+.pill.good{color:var(--good);border-color:rgba(127,196,160,.45)}
+.pill.acc{color:var(--acc);border-color:rgba(242,132,107,.45)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.actions button,.actions a{flex:1;text-align:center;text-decoration:none;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:9px 4px;font-size:13px;font-weight:700}
+.actions .done{background:rgba(127,196,160,.12);border-color:rgba(127,196,160,.45);color:var(--good)}
+.mindnote{font-size:13px;color:var(--acc2);margin-top:8px;line-height:1.4}
+
+/* Nudge */
+.nudge{background:linear-gradient(135deg,rgba(242,132,107,.16),rgba(242,132,107,.03));border:1px solid rgba(242,132,107,.35);border-radius:16px;padding:14px;margin:14px 0 4px}
+.nudge .k{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
+.nudge .t{font-size:15px;margin-top:6px;line-height:1.45}
+
+/* Search / chips */
+.search{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);font-size:16px;margin:12px 0 8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{background:var(--panel);border:1px solid var(--line);color:var(--mut);border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;white-space:nowrap}
+.chip.on{color:var(--ink);border-color:var(--acc);background:var(--panel2)}
+
+/* Forms */
+label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:14px 0 6px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 12px;color:var(--ink);font-size:16px;font-family:var(--sans)}
+textarea{min-height:76px;resize:vertical}
+input:focus,select:focus,textarea:focus,.search:focus{outline:none;border-color:var(--acc)}
+.two{display:flex;gap:10px}.two>div{flex:1;min-width:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);padding:8px 11px;font-size:13px;border-radius:10px}
+.seg button.on{color:var(--ink);border-color:var(--acc)}
+
+/* Sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--bg);border:1px solid var(--line);border-bottom:none;border-radius:20px 20px 0 0;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
+.sheet .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sheet h3{font-size:19px;font-weight:800}
+.x{background:var(--panel2);width:34px;height:34px;border-radius:50%;font-size:18px;color:var(--mut)}
+
+/* Detail */
+.hero{display:flex;gap:14px;align-items:center;margin:8px 0 4px}
+.hero .av{width:60px;height:60px;font-size:22px}
+.stats{display:flex;gap:8px;margin-top:14px}
+.stat{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat .v{font-family:var(--mono);font-size:17px;font-weight:700}
+.stat .l{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-top:3px}
+.hist{font-size:14px;border-top:1px solid var(--line);padding:10px 0}
+.hist:first-child{border-top:none}
+.hist .d{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.hist .n{margin-top:3px;line-height:1.4;color:var(--ink)}
+.toggle{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;cursor:pointer}
+.sw{width:46px;height:28px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .2s}
+.sw.on{background:var(--acc)}.sw.on::after{left:21px}
+
+/* Nav */
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(21,23,29,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;color:var(--mut);padding:11px 0 9px;font-size:11px;font-weight:600;display:flex;flex-direction:column;gap:3px;align-items:center;border-radius:0;position:relative}
+nav button.on{color:var(--acc)}
+nav .ic{font-size:20px;line-height:1}
+nav .dot{position:absolute;top:6px;left:calc(50% + 8px);background:var(--bad);color:#fff;font-size:10px;border-radius:99px;padding:1px 5px;font-family:var(--mono)}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:all .25s;z-index:90;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.note{font-size:13px;color:var(--mut);line-height:1.5;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<nav id="nav">
+  <button data-v="today"><span class="ic">☀︎</span>Today</button>
+  <button data-v="people"><span class="ic">◎</span>People</button>
+  <button data-v="settings"><span class="ic">⚙︎</span>Settings</button>
+</nav>
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+<input type="file" id="vcfIn" accept=".vcf,text/vcard,text/x-vcard" hidden>
+
+<script>
+/* ============ CONSTANTS ============ */
+const CADENCES = [
+  {d:7,l:'Weekly'},{d:14,l:'2 weeks'},{d:30,l:'Monthly'},{d:60,l:'2 months'},
+  {d:90,l:'Quarterly'},{d:180,l:'6 months'},{d:365,l:'Yearly'}
+];
+const GROUPS = ['Family','Close friends','Friends','Work','Mentors','Community'];
+const TYPES = [
+  {id:'text',l:'Text',ic:'💬'},{id:'call',l:'Call',ic:'📞'},{id:'email',l:'Email',ic:'✉️'},
+  {id:'inperson',l:'In person',ic:'🤝'},{id:'social',l:'Social',ic:'📱'},{id:'other',l:'Other',ic:'✦'}
+];
+const COLORS = ['#F2846B','#7FC4A0','#F0C25C','#8FB5F0','#C79BEA','#6FD1D1','#F09BC0','#B8C77A'];
+const PROMPTS = [
+  'Send a song, photo or article that made you think of them.',
+  'Ask about something they mentioned last time.',
+  'A two-line “thinking of you” text counts. It doesn’t need a reason.',
+  'Suggest a specific time for coffee or a call — specifics get yeses.',
+  'Share a memory you have together.',
+  'Congratulate them on something, however small.',
+  'Ask for their recommendation on something — people love being asked.'
+];
+
+/* ============ STATE ============ */
+const store = {
+  get(k,d){try{const v=localStorage.getItem('cx.'+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('cx.'+k,JSON.stringify(v))}catch(e){toast('Could not save — storage full?')}}
+};
+let people = store.get('people',[]);
+let settings = store.get('settings',{notify:false,lastNotified:null,soonDays:3});
+let view = 'today';
+let filter = 'all';
+let query = '';
+const save = () => { store.set('people',people); store.set('settings',settings); updateBadge(); };
+
+/* ============ HELPERS ============ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today = () => ymd(new Date());
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const addDays = (s,n) => { const d = parse(s); d.setDate(d.getDate()+n); return ymd(d); };
+const diff = (a,b) => Math.round((parse(a)-parse(b))/864e5);  // a - b in days
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const initials = n => n.trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase() || '?';
+const color = id => COLORS[[...id].reduce((a,c)=>a+c.charCodeAt(0),0) % COLORS.length];
+const cadLabel = d => (CADENCES.find(c=>c.d===d)||{l:`Every ${d} days`}).l.replace(/^(\d)/,'Every $1');
+const typeOf = id => TYPES.find(t=>t.id===id) || TYPES[5];
+const fmtDate = s => parse(s).toLocaleDateString(undefined,{month:'short',day:'numeric',year: s.slice(0,4)===today().slice(0,4)?undefined:'numeric'});
+function ago(s){
+  if(!s) return 'Never logged';
+  const n = diff(today(), s);
+  if(n<=0) return 'Today'; if(n===1) return 'Yesterday';
+  if(n<14) return `${n} days ago`; if(n<60) return `${Math.round(n/7)} weeks ago`;
+  if(n<365) return `${Math.round(n/30)} months ago`;
+  return `${(n/365).toFixed(1).replace('.0','')} years ago`;
+}
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2200); }
+
+/* ============ SCHEDULING ============ */
+// Next due date: last contact + cadence (or now if never contacted), pushed later by a snooze.
+function dueDate(p){
+  let due = p.lastContact ? addDays(p.lastContact, p.cadence) : (p.created || today());
+  if(p.snoozeUntil && p.snoozeUntil > due) due = p.snoozeUntil;
+  return due;
+}
+function status(p){
+  if(p.paused) return {k:'paused', days:Infinity, label:'Paused', cls:''};
+  const d = diff(dueDate(p), today());
+  if(d < 0)  return {k:'overdue', days:d, label: `${-d}d overdue`, cls:'bad'};
+  if(d === 0) return {k:'due', days:0, label:'Due today', cls:'warn'};
+  if(d <= settings.soonDays) return {k:'soon', days:d, label:`In ${d}d`, cls:'warn'};
+  return {k:'ok', days:d, label:`In ${d}d`, cls:'good'};
+}
+function nextBirthday(p){
+  if(!p.birthday) return null;
+  const md = p.birthday.slice(-5); const t = today();
+  let s = `${t.slice(0,4)}-${md}`;
+  if(md==='02-29' && !isLeap(+t.slice(0,4))) s = `${t.slice(0,4)}-02-28`;
+  if(s < t){ const y=+t.slice(0,4)+1; s = (md==='02-29'&&!isLeap(y))?`${y}-02-28`:`${y}-${md}`; }
+  return {date:s, days:diff(s,t)};
+}
+const isLeap = y => (y%4===0&&y%100!==0)||y%400===0;
+const needsYou = () => people.filter(p=>{const k=status(p).k; return k==='overdue'||k==='due';});
+
+/* ============ RENDER ============ */
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on', b.dataset.v===view));
+  const n = needsYou().length + people.filter(p=>p.onMind).length;
+  const tb = document.querySelector('nav button[data-v="today"]');
+  tb.querySelector('.dot')?.remove();
+  if(n) tb.insertAdjacentHTML('beforeend', `<span class="dot">${n}</span>`);
+  $('app').innerHTML = view==='today' ? renderToday() : view==='people' ? renderPeople() : renderSettings();
+}
+
+function personRow(p, opts={}){
+  const st = status(p);
+  const bd = nextBirthday(p);
+  let meta = [p.group, `Last: ${ago(p.lastContact)}`].filter(Boolean).join(' · ');
+  if(opts.bday && bd) meta = bd.days===0 ? '🎂 Birthday today!' : `🎂 Birthday in ${bd.days}d · ${fmtDate(bd.date)}`;
+  const pill = opts.bday ? '' : p.onMind && opts.mind ? `<span class="pill acc">On your mind</span>` : `<span class="pill ${st.cls}">${st.label}</span>`;
+  return `<div class="card">
+    <div class="p" onclick="openPerson('${p.id}')">
+      <div class="av" style="background:${color(p.id)}">${esc(initials(p.name))}</div>
+      <div class="info"><div class="nm">${esc(p.name)}</div><div class="meta">${esc(meta)}</div></div>
+      ${pill}
+    </div>
+    ${opts.mind && p.mindNote ? `<div class="mindnote">“${esc(p.mindNote)}”</div>` : ''}
+    ${opts.actions ? actionRow(p) : ''}
+  </div>`;
+}
+function actionRow(p){
+  const tel = p.phone ? p.phone.replace(/[^\d+]/g,'') : '';
+  const a = [];
+  if(tel){ a.push(`<a href="sms:${tel}" onclick="pendingReach('${p.id}','text')">💬 Text</a>`);
+           a.push(`<a href="tel:${tel}" onclick="pendingReach('${p.id}','call')">📞 Call</a>`); }
+  if(p.email) a.push(`<a href="mailto:${esc(p.email)}" onclick="pendingReach('${p.id}','email')">✉️ Email</a>`);
+  a.push(`<button class="done" onclick="openLog('${p.id}')">✓ Done</button>`);
+  a.push(`<button onclick="openSnooze('${p.id}')">⏱ Later</button>`);
+  return `<div class="actions">${a.join('')}</div>`;
+}
+
+function renderToday(){
+  const t = today();
+  const hour = new Date().getHours();
+  const greet = hour<12?'Good morning':hour<18?'Good afternoon':'Good evening';
+  if(!people.length){
+    return `<header><div><h1>Connections</h1><div class="sub">${greet}.</div></div></header>
+    <div class="nudge"><div class="k">Start here</div><div class="t">Add the people you want to stay close to. Pick how often you'd like to reach out, and Connections will tell you who's due — and keep a list of whoever's on your mind.</div></div>
+    <div style="margin-top:14px;display:grid;gap:8px">
+      <button class="btn" onclick="openEdit()">＋ Add your first person</button>
+      ${contactPickerBtn()}
+      <button class="btn ghost" onclick="$('vcfIn').click()">Import contact card (.vcf)</button>
+    </div>`;
+  }
+  const mind = people.filter(p=>p.onMind);
+  const due = people.filter(p=>!p.onMind && ['overdue','due'].includes(status(p).k))
+                    .sort((a,b)=>status(a).days-status(b).days);
+  const soon = people.filter(p=>!p.onMind && status(p).k==='soon').sort((a,b)=>status(a).days-status(b).days);
+  const bdays = people.map(p=>({p,b:nextBirthday(p)})).filter(x=>x.b && x.b.days<=14).sort((a,b)=>a.b.days-b.b.days);
+  const total = mind.length + due.length;
+  const prompt = PROMPTS[parse(t).getDate() % PROMPTS.length];
+  const longest = people.filter(p=>!p.paused && p.lastContact).sort((a,b)=>a.lastContact.localeCompare(b.lastContact))[0];
+
+  let h = `<header><div><h1>${greet}</h1><div class="sub">${total ? `${total} ${total===1?'person':'people'} to reach out to.` : 'You’re all caught up. 🌿'}</div></div>
+    <button class="add" onclick="openEdit()" aria-label="Add person">＋</button></header>
+    <div class="nudge"><div class="k">Today's nudge</div><div class="t">${esc(prompt)}</div></div>`;
+
+  h += `<h2>On your mind <span class="n">${mind.length||''}</span></h2>`;
+  h += mind.length ? mind.map(p=>personRow(p,{actions:true,mind:true})).join('')
+      : `<div class="empty">Thinking of someone? Tap <b>＋</b> or open a person and flip on <b>“On my mind”</b> so you don't forget.</div>`;
+
+  if(due.length){ h += `<h2>Due now <span class="n">${due.length}</span></h2>` + due.map(p=>personRow(p,{actions:true})).join(''); }
+  if(bdays.length){ h += `<h2>Birthdays</h2>` + bdays.map(x=>personRow(x.p,{bday:true})).join(''); }
+  if(soon.length){ h += `<h2>Coming up</h2>` + soon.map(p=>personRow(p)).join(''); }
+  if(!due.length && longest && diff(t,longest.lastContact) > 30){
+    h += `<h2>It's been a while</h2>` + personRow(longest,{actions:true});
+  }
+  return h;
+}
+
+function renderPeople(){
+  const groups = [...new Set(people.map(p=>p.group).filter(Boolean))];
+  let list = people.slice();
+  if(query) list = list.filter(p=>(p.name+' '+(p.group||'')+' '+(p.notes||'')).toLowerCase().includes(query.toLowerCase()));
+  if(filter==='due') list = list.filter(p=>['overdue','due','soon'].includes(status(p).k));
+  else if(filter==='mind') list = list.filter(p=>p.onMind);
+  else if(filter==='paused') list = list.filter(p=>p.paused);
+  else if(filter!=='all') list = list.filter(p=>p.group===filter);
+  list.sort((a,b)=>status(a).days-status(b).days || a.name.localeCompare(b.name));
+  const chip = (id,l) => `<button class="chip ${filter===id?'on':''}" onclick="setFilter('${esc(id)}')">${esc(l)}</button>`;
+  return `<header><div><h1>People</h1><div class="sub">${people.length} ${people.length===1?'person':'people'} you're keeping close</div></div>
+    <button class="add" onclick="openEdit()" aria-label="Add person">＋</button></header>
+    <input class="search" id="q" placeholder="Search" value="${esc(query)}" oninput="query=this.value;rerenderList()">
+    <div class="chips">${chip('all','All')}${chip('due','Due soon')}${chip('mind','On my mind')}${groups.map(g=>chip(g,g)).join('')}${people.some(p=>p.paused)?chip('paused','Paused'):''}</div>
+    <div id="plist" style="margin-top:12px">${list.length ? list.map(p=>personRow(p)).join('') : `<div class="empty">${people.length?'No matches.':'No one here yet. Tap ＋ to add someone.'}</div>`}</div>`;
+}
+function rerenderList(){ const pos = $('q').selectionStart; render(); const q=$('q'); q.focus(); q.setSelectionRange(pos,pos); }
+function setFilter(f){ filter=f; render(); }
+
+function contactPickerBtn(){
+  return ('contacts' in navigator && 'ContactsManager' in window) ? `<button class="btn ghost" onclick="pickContacts()">Import from contacts</button>` : '';
+}
+
+function renderSettings(){
+  const notifOK = 'Notification' in window;
+  return `<header><div><h1>Settings</h1><div class="sub">Everything stays on this device.</div></div></header>
+  <h2>Reminders</h2>
+  <div class="toggle" onclick="toggleNotify()"><div><div style="font-weight:700">Notify me when people are due</div><div class="note" style="margin-top:3px">${notifOK?'Shows a notification + app badge when you open Connections.':'Not supported in this browser.'}</div></div><div class="sw ${settings.notify?'on':''}"></div></div>
+  <div class="card" style="margin-top:10px">
+    <div style="font-weight:700">Calendar reminders</div>
+    <div class="note">Phones don't let offline web apps wake themselves up, so for reliable reminders, add a repeating calendar event for each person at their cadence. Re-export after adding people.</div>
+    <button class="btn ghost small" style="margin-top:10px" onclick="exportICS()">Download calendar (.ics)</button>
+  </div>
+  <label>“Coming up” window</label>
+  <div class="seg">${[1,3,5,7].map(d=>`<button class="${settings.soonDays===d?'on':''}" onclick="settings.soonDays=${d};save();render()">${d} day${d>1?'s':''}</button>`).join('')}</div>
+  <h2>Import</h2>
+  <div style="display:grid;gap:8px">${contactPickerBtn()}<button class="btn ghost" onclick="$('vcfIn').click()">Import contact cards (.vcf)</button></div>
+  <div class="note">On iPhone: Contacts → pick someone → Share Contact → Save to Files, then import here.</div>
+  <h2>Backup</h2>
+  <div style="display:grid;gap:8px">
+    <button class="btn ghost" onclick="exportJSON()">Export backup (.json)</button>
+    <button class="btn ghost" onclick="$('fileIn').click()">Restore from backup</button>
+  </div>
+  <div class="note">Data lives in this browser only. Back up now and then.</div>
+  <h2>Danger zone</h2>
+  <button class="btn danger" onclick="wipe()">Erase all data</button>
+  <div class="note" style="text-align:center;margin-top:24px">Connections · v1</div>`;
+}
+
+/* ============ SHEETS ============ */
+function openSheet(html){ $('sheet').innerHTML = html; $('scrim').classList.add('on'); $('sheet').scrollTop=0; }
+function closeSheet(){ $('scrim').classList.remove('on'); }
+$('scrim').addEventListener('click', e => { if(e.target.id==='scrim') closeSheet(); });
+const sheetTop = title => `<div class="top"><h3>${esc(title)}</h3><button class="x" onclick="closeSheet()" aria-label="Close">✕</button></div>`;
+const byId = id => people.find(p=>p.id===id);
+
+function openPerson(id){
+  const p = byId(id); if(!p) return;
+  const st = status(p), bd = nextBirthday(p);
+  const log = (p.log||[]).slice().sort((a,b)=>b.d.localeCompare(a.d));
+  openSheet(`${sheetTop('')}
+    <div class="hero"><div class="av" style="background:${color(p.id)}">${esc(initials(p.name))}</div>
+      <div><h3>${esc(p.name)}</h3><div class="sub">${esc([p.group, cadLabel(p.cadence)].filter(Boolean).join(' · '))}</div></div></div>
+    <div class="stats">
+      <div class="stat"><div class="v">${p.lastContact?esc(fmtDate(p.lastContact)):'—'}</div><div class="l">Last</div></div>
+      <div class="stat"><div class="v" style="color:var(--${st.cls||'mut'})">${p.paused?'—':esc(fmtDate(dueDate(p)))}</div><div class="l">${p.paused?'Paused':'Next'}</div></div>
+      <div class="stat"><div class="v">${(p.log||[]).length}</div><div class="l">Touches</div></div>
+    </div>
+    ${actionRow(p)}
+    <div class="toggle" onclick="toggleMind('${p.id}')"><div style="font-weight:700">On my mind</div><div class="sw ${p.onMind?'on':''}"></div></div>
+    ${p.onMind ? `<input style="margin-top:8px" placeholder="Why? (e.g. ask about the new job)" value="${esc(p.mindNote||'')}" onchange="setMindNote('${p.id}',this.value)">` : ''}
+    ${p.phone||p.email||bd ? `<h2>Details</h2><div class="card" style="font-size:14px;line-height:1.8">
+      ${p.phone?`📞 ${esc(p.phone)}<br>`:''}${p.email?`✉️ ${esc(p.email)}<br>`:''}${bd?`🎂 ${esc(fmtDate(bd.date))} (${bd.days===0?'today':`in ${bd.days}d`})`:''}</div>`:''}
+    ${p.notes ? `<h2>Notes</h2><div class="card" style="font-size:14px;line-height:1.5;white-space:pre-wrap">${esc(p.notes)}</div>`:''}
+    <h2>History</h2>
+    <div class="card">${log.length ? log.map((e,i)=>`<div class="hist"><div class="row" style="display:flex;justify-content:space-between"><span class="d">${typeOf(e.t).ic} ${esc(typeOf(e.t).l)} · ${esc(fmtDate(e.d))}</span><button style="background:none;color:var(--mut);font-size:12px" onclick="delLog('${p.id}','${e.id}')">remove</button></div>${e.n?`<div class="n">${esc(e.n)}</div>`:''}</div>`).join('') : `<div class="note" style="margin:0">No touches logged yet.</div>`}</div>
+    <div style="display:grid;gap:8px;margin-top:16px">
+      <button class="btn ghost" onclick="openEdit('${p.id}')">Edit</button>
+      <button class="btn ghost" onclick="togglePause('${p.id}')">${p.paused?'Resume reminders':'Pause reminders'}</button>
+      <button class="btn danger" onclick="delPerson('${p.id}')">Remove ${esc(p.name.split(' ')[0])}</button>
+    </div>`);
+}
+
+function openEdit(id){
+  const p = id ? byId(id) : {name:'',group:'',cadence:30,phone:'',email:'',birthday:'',notes:'',onMind:false,lastContact:''};
+  const groups = [...new Set([...GROUPS, ...people.map(x=>x.group).filter(Boolean)])];
+  openSheet(`${sheetTop(id?'Edit person':'Add someone')}
+    <label>Name</label><input id="f_name" value="${esc(p.name)}" placeholder="Who's on your list?" autocomplete="off">
+    <label>Reach out every</label>
+    <div class="seg" id="f_cad">${CADENCES.map(c=>`<button type="button" data-d="${c.d}" class="${p.cadence===c.d?'on':''}">${c.l}</button>`).join('')}</div>
+    <label>Group</label>
+    <input id="f_group" list="grouplist" value="${esc(p.group||'')}" placeholder="Family, Friends, Work…">
+    <datalist id="grouplist">${groups.map(g=>`<option value="${esc(g)}">`).join('')}</datalist>
+    <div class="two"><div><label>Phone</label><input id="f_phone" type="tel" value="${esc(p.phone||'')}"></div>
+    <div><label>Email</label><input id="f_email" type="email" value="${esc(p.email||'')}"></div></div>
+    <div class="two"><div><label>Birthday</label><input id="f_bday" type="date" value="${esc(p.birthday && p.birthday.length===10 ? p.birthday : '')}"></div>
+    <div><label>Last talked</label><input id="f_last" type="date" max="${today()}" value="${esc(p.lastContact||'')}"></div></div>
+    <label>Notes</label><textarea id="f_notes" placeholder="Kids' names, what they're working on, things to ask about…">${esc(p.notes||'')}</textarea>
+    ${id?'':`<div class="toggle" id="f_mind" onclick="this.querySelector('.sw').classList.toggle('on')"><div style="font-weight:700">On my mind right now</div><div class="sw"></div></div>`}
+    <button class="btn" style="margin-top:18px" onclick="savePerson(${id?`'${id}'`:''})">${id?'Save':'Add'}</button>`);
+  $('f_cad').querySelectorAll('button').forEach(b=>b.onclick=()=>{ $('f_cad').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
+  if(!id) setTimeout(()=>$('f_name').focus(), 50);
+}
+function savePerson(id){
+  const name = $('f_name').value.trim();
+  if(!name){ $('f_name').focus(); toast('Add a name'); return; }
+  const cadBtn = $('f_cad').querySelector('.on');
+  const data = {
+    name, group:$('f_group').value.trim(), cadence: cadBtn ? +cadBtn.dataset.d : 30,
+    phone:$('f_phone').value.trim(), email:$('f_email').value.trim(),
+    birthday:$('f_bday').value, notes:$('f_notes').value.trim(),
+    lastContact:$('f_last').value || null
+  };
+  if(id){
+    const p = byId(id);
+    if(data.lastContact !== p.lastContact) p.snoozeUntil = null;
+    Object.assign(p, data);
+    save(); openPerson(id);
+  } else {
+    const p = {id:uid(), created:today(), log:[], onMind: $('f_mind').querySelector('.sw').classList.contains('on'), ...data};
+    if(p.lastContact) p.log.push({id:uid(), d:p.lastContact, t:'other', n:''});
+    people.push(p); save(); closeSheet(); toast(`${name.split(' ')[0]} added`);
+  }
+  render();
+}
+
+// When someone taps Text/Call/Email, remember it so we can offer to log it when they come back.
+let pending = null;
+function pendingReach(id, t){ pending = {id, t, at:Date.now()}; }
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState==='visible'){
+    if(pending && Date.now()-pending.at < 30*60e3 && byId(pending.id)){ const p=pending; pending=null; openLog(p.id, p.t); }
+    checkNotify(); render();
+  }
+});
+
+function openLog(id, t='text'){
+  const p = byId(id);
+  openSheet(`${sheetTop(`Reached out to ${p.name.split(' ')[0]}?`)}
+    <label>How</label>
+    <div class="seg" id="l_type">${TYPES.map(x=>`<button type="button" data-t="${x.id}" class="${x.id===t?'on':''}">${x.ic} ${x.l}</button>`).join('')}</div>
+    <label>When</label><input id="l_date" type="date" max="${today()}" value="${today()}">
+    <label>Note (optional)</label><textarea id="l_note" placeholder="What did you talk about? Anything to follow up on?"></textarea>
+    <button class="btn" style="margin-top:18px" onclick="saveLog('${id}')">Log it</button>`);
+  $('l_type').querySelectorAll('button').forEach(b=>b.onclick=()=>{ $('l_type').querySelectorAll('button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); });
+}
+function saveLog(id){
+  const p = byId(id);
+  const d = $('l_date').value || today();
+  const t = ($('l_type').querySelector('.on')||{dataset:{t:'other'}}).dataset.t;
+  (p.log ||= []).push({id:uid(), d, t, n:$('l_note').value.trim()});
+  if(!p.lastContact || d >= p.lastContact) p.lastContact = d;
+  p.snoozeUntil = null; p.onMind = false; p.mindNote = '';
+  save(); closeSheet(); render();
+  toast(`Nice. Next nudge for ${p.name.split(' ')[0]}: ${fmtDate(dueDate(p))}`);
+}
+function delLog(pid, lid){
+  const p = byId(pid);
+  p.log = p.log.filter(e=>e.id!==lid);
+  p.lastContact = p.log.length ? p.log.map(e=>e.d).sort().pop() : null;
+  save(); openPerson(pid); render();
+}
+
+function openSnooze(id){
+  const p = byId(id);
+  const opts = [[1,'Tomorrow'],[3,'In 3 days'],[7,'Next week'],[14,'In 2 weeks'],[30,'Next month']];
+  openSheet(`${sheetTop(`Remind me about ${p.name.split(' ')[0]}…`)}
+    <div style="display:grid;gap:8px;margin-top:10px">${opts.map(([n,l])=>`<button class="btn ghost" onclick="snooze('${id}',${n})">${l}</button>`).join('')}</div>`);
+}
+function snooze(id, n){
+  const p = byId(id);
+  p.snoozeUntil = addDays(today(), n);
+  p.onMind = false;
+  save(); closeSheet(); render(); toast(`Snoozed until ${fmtDate(p.snoozeUntil)}`);
+}
+
+function toggleMind(id){ const p=byId(id); p.onMind=!p.onMind; if(!p.onMind) p.mindNote=''; save(); openPerson(id); render(); }
+function setMindNote(id,v){ byId(id).mindNote=v.trim(); save(); render(); }
+function togglePause(id){ const p=byId(id); p.paused=!p.paused; save(); openPerson(id); render(); }
+function delPerson(id){
+  const p = byId(id);
+  if(!confirm(`Remove ${p.name} and their history?`)) return;
+  people = people.filter(x=>x.id!==id); save(); closeSheet(); render();
+}
+
+/* ============ IMPORT / EXPORT ============ */
+function download(name, text, type){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text],{type}));
+  a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();}, 500);
+}
+function exportJSON(){ download(`connections-${today()}.json`, JSON.stringify({v:1, people, settings},null,1), 'application/json'); }
+$('fileIn').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value=''; if(!f) return;
+  try{
+    const data = JSON.parse(await f.text());
+    if(!Array.isArray(data.people)) throw 0;
+    if(!confirm(`Replace your current list with ${data.people.length} people from this backup?`)) return;
+    people = data.people; settings = {...settings, ...(data.settings||{})}; save(); render(); toast('Restored');
+  }catch(err){ toast('That file isn’t a Connections backup'); }
+});
+
+function addImported(list){
+  let added = 0;
+  const have = new Set(people.map(p=>p.name.toLowerCase()));
+  for(const c of list){
+    if(!c.name || have.has(c.name.toLowerCase())) continue;
+    people.push({id:uid(), created:today(), log:[], cadence:30, group:'', notes:'', lastContact:null, onMind:false, ...c});
+    have.add(c.name.toLowerCase()); added++;
+  }
+  save(); render(); toast(added ? `Imported ${added} ${added===1?'person':'people'}` : 'No new people found');
+}
+$('vcfIn').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value=''; if(!f) return;
+  addImported(parseVCF(await f.text()));
+});
+function parseVCF(text){
+  const lines = text.replace(/\r\n[ \t]/g,'').split(/\r?\n/);   // unfold continuation lines
+  const out = []; let c = null;
+  for(const line of lines){
+    const i = line.indexOf(':'); if(i<0) continue;
+    const key = line.slice(0,i).split(';')[0].split('.').pop().toUpperCase();
+    const val = line.slice(i+1).replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\n/gi,'\n').trim();
+    if(key==='BEGIN') c = {};
+    else if(key==='END' && c){ if(c.name) out.push(c); c = null; }
+    else if(!c) continue;
+    else if(key==='FN') c.name = val;
+    else if(key==='N' && !c.name){ const [l,f] = val.split(';'); c.name = [f,l].filter(Boolean).join(' '); }
+    else if(key==='TEL' && !c.phone) c.phone = val;
+    else if(key==='EMAIL' && !c.email) c.email = val;
+    else if(key==='BDAY' && !c.birthday){ const m = val.replace(/-/g,'').match(/(\d{4})(\d{2})(\d{2})/); if(m) c.birthday = `${m[1]}-${m[2]}-${m[3]}`; }
+  }
+  return out;
+}
+async function pickContacts(){
+  try{
+    const res = await navigator.contacts.select(['name','tel','email'],{multiple:true});
+    addImported(res.map(r=>({name:(r.name||[])[0]||'', phone:(r.tel||[])[0]||'', email:(r.email||[])[0]||''})));
+  }catch(e){ toast('Contact import cancelled'); }
+}
+
+function exportICS(){
+  const active = people.filter(p=>!p.paused);
+  if(!active.length){ toast('Add some people first'); return; }
+  const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+  const icsEsc = s => String(s).replace(/[\\,;]/g,m=>'\\'+m).replace(/\n/g,'\\n');
+  const ev = active.map(p=>{
+    let start = dueDate(p); if(start < today()) start = today();
+    const d = start.replace(/-/g,'');
+    return ['BEGIN:VEVENT',`UID:connections-${p.id}@local`,`DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${d}`,`DTEND;VALUE=DATE:${addDays(start,1).replace(/-/g,'')}`,
+      `RRULE:FREQ=DAILY;INTERVAL=${p.cadence}`,
+      `SUMMARY:${icsEsc('Reach out to '+p.name)}`,
+      `DESCRIPTION:${icsEsc([p.phone, p.email, p.notes].filter(Boolean).join('\n'))}`,
+      'BEGIN:VALARM','TRIGGER:PT9H','ACTION:DISPLAY',`DESCRIPTION:${icsEsc('Reach out to '+p.name)}`,'END:VALARM',
+      'END:VEVENT'].join('\r\n');
+  });
+  download('connections-reminders.ics', ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Connections//EN','CALSCALE:GREGORIAN',...ev,'END:VCALENDAR'].join('\r\n'), 'text/calendar');
+}
+
+function wipe(){
+  if(!confirm('Erase everyone and all history? This cannot be undone.')) return;
+  people = []; save(); render(); toast('Erased');
+}
+
+/* ============ NOTIFICATIONS / BADGE ============ */
+function updateBadge(){
+  const n = needsYou().length + people.filter(p=>p.onMind).length;
+  try{ if('setAppBadge' in navigator) (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(()=>{}); }catch(e){}
+}
+async function toggleNotify(){
+  if(!('Notification' in window)){ toast('Notifications not supported here'); return; }
+  if(settings.notify){ settings.notify=false; save(); render(); return; }
+  const r = await Notification.requestPermission();
+  settings.notify = r==='granted';
+  if(!settings.notify) toast('Permission not granted');
+  save(); render(); checkNotify(true);
+}
+async function checkNotify(force){
+  if(!settings.notify || !('Notification' in window) || Notification.permission!=='granted') return;
+  if(!force && settings.lastNotified===today()) return;
+  const due = needsYou(); if(!due.length) return;
+  const names = due.slice(0,3).map(p=>p.name.split(' ')[0]).join(', ') + (due.length>3?` +${due.length-3}`:'');
+  const title = `${due.length} ${due.length===1?'person':'people'} to reach out to`;
+  try{
+    const reg = await navigator.serviceWorker?.getRegistration();
+    if(reg) reg.showNotification(title,{body:names, icon:'icon-192.png', badge:'icon-192.png', tag:'connections-due'});
+    else new Notification(title,{body:names, icon:'icon-192.png'});
+    settings.lastNotified = today(); save();
+  }catch(e){}
+}
+
+/* ============ BOOT ============ */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{ view=b.dataset.v; closeSheet(); render(); scrollTo(0,0); });
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+render(); updateBadge(); checkNotify();
+// Roll over at midnight if the app is left open.
+setInterval(()=>{ if(document.visibilityState==='visible' && !$('scrim').classList.contains('on')) render(); }, 60e3);
+</script>
+</body>
+</html>
