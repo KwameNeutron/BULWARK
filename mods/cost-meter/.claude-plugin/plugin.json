@@ -1,0 +1,1 @@
+{ "name": "cost-meter", "version": "0.2.0", "description": "Status line with session cost, context fill and rate limits; warns past 80% of a limit", "types": "./types/index.d.ts" }
