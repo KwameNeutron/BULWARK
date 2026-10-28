@@ -1,0 +1,65 @@
+[
+  {
+    "id": "lead-nyt-19661209",
+    "outlet": "The New York Times",
+    "date": "1966-12-09",
+    "what": "Front-page report of the 8 December agreement announcement.",
+    "where_to_look": "TimesMachine (subscriber), or the nytimes.com/1966/12/09/archives/ abstract pages",
+    "status": "TO VERIFY",
+    "note": "No headline or URL confirmed. Do not cite until checked in TimesMachine."
+  },
+  {
+    "id": "lead-nyt-19670128",
+    "outlet": "The New York Times",
+    "date": "1967-01-28",
+    "what": "Coverage of the 27 January signing ceremonies.",
+    "where_to_look": "TimesMachine",
+    "status": "TO VERIFY",
+    "note": "No headline or URL confirmed."
+  },
+  {
+    "id": "lead-nyt-19671011",
+    "outlet": "The New York Times",
+    "date": "1967-10-11",
+    "what": "Entry into force ceremonies.",
+    "where_to_look": "TimesMachine",
+    "status": "TO VERIFY",
+    "note": "No headline or URL confirmed."
+  },
+  {
+    "id": "lead-pravda-19670128",
+    "outlet": "Pravda / Izvestia",
+    "date": "1967-01-28",
+    "what": "Soviet framing of the Moscow signing (Gromyko, Kosygin present).",
+    "where_to_look": "East View Pravda/Izvestia digital archives; English translations in the Current Digest of the Soviet Press (East View, subscription)",
+    "status": "TO VERIFY",
+    "note": "Needs institutional access."
+  },
+  {
+    "id": "lead-ct-19670128",
+    "outlet": "The Canberra Times",
+    "date": "1967-01-28",
+    "what": "Australian coverage of the signing (Australia was an early signatory).",
+    "where_to_look": "Trove (free to read; API needs a key)",
+    "status": "TO VERIFY",
+    "note": "Trove API returned 401 without a key; search manually or register a key."
+  },
+  {
+    "id": "lead-chronam-19631214",
+    "outlet": "Evening Star and other Chronicling America titles",
+    "date": "1963-12-14",
+    "what": "Report of the 13 December adoption of the Declaration of Legal Principles itself.",
+    "where_to_look": "Chronicling America, 1963-12-13 to 1963-12-16",
+    "status": "TO VERIFY",
+    "note": "Keyword search hit pre-adoption coverage (22 Nov, 1 Dec, 6 Dec) but not yet the adoption story."
+  },
+  {
+    "id": "lead-delpher-tijd-19671011",
+    "outlet": "De Tijd / De Maasbode",
+    "date": "1967-10-11",
+    "what": "\"Geen kernbommen in de ruimte\" (entry into force).",
+    "where_to_look": "Delpher, identifier ddd:011219848:mpeg21:a0110",
+    "status": "TO VERIFY",
+    "note": "Delpher marks this title 'in copyright, on-site access only' (KB reading room). Metadata confirmed; text not viewable remotely."
+  }
+]

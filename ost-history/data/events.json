@@ -1,0 +1,134 @@
+[
+  {
+    "id": "ev-sputnik",
+    "date": "1957-10-04",
+    "phase": "origins",
+    "title": "Sputnik 1 reaches orbit",
+    "summary": "The Soviet Union launches the first artificial Earth satellite. US and allied papers frame it as a scientific feat and a diplomatic blow, and the question of who may use outer space, and on what terms, becomes a matter for diplomats.",
+    "places": ["pl-baikonur"],
+    "documents": [],
+    "status": "verified"
+  },
+  {
+    "id": "ev-res1348",
+    "date": "1958-12-13",
+    "phase": "origins",
+    "title": "UN creates an ad hoc outer space committee",
+    "summary": "General Assembly Resolution 1348 (XIII), 'Question of the peaceful use of outer space', sets up the ad hoc Committee on the Peaceful Uses of Outer Space (COPUOS).",
+    "places": ["pl-unhq"],
+    "documents": ["doc-res1348"],
+    "status": "verified"
+  },
+  {
+    "id": "ev-res1721",
+    "date": "1961-12-20",
+    "phase": "origins",
+    "title": "Resolution 1721 (XVI): international law applies in space",
+    "summary": "The Assembly commends the principle that international law, including the UN Charter, applies to outer space and celestial bodies, and that they are free for exploration and not subject to national appropriation. Press coverage at the time folds it into wider reporting on a US–Soviet deal on the session's agenda.",
+    "places": ["pl-unhq"],
+    "documents": ["doc-res1721"],
+    "status": "verified"
+  },
+  {
+    "id": "ev-res1884",
+    "date": "1963-10-17",
+    "phase": "declaration",
+    "title": "'No bombs in orbit': Resolution 1884 (XVIII)",
+    "summary": "The General Assembly, by acclamation, calls on states not to place nuclear weapons or other weapons of mass destruction in orbit. The US and USSR had agreed the text in advance. It becomes the core of OST Article IV.",
+    "places": ["pl-unhq"],
+    "documents": ["doc-res1884"],
+    "status": "verified"
+  },
+  {
+    "id": "ev-res1962",
+    "date": "1963-12-13",
+    "phase": "declaration",
+    "title": "Declaration of Legal Principles: Resolution 1962 (XVIII)",
+    "summary": "The Assembly adopts, without a vote, the Declaration of Legal Principles Governing the Activities of States in the Exploration and Use of Outer Space. US and Soviet negotiators had made the joint text public in late November 1963. Most of its nine principles reappear, nearly verbatim, in the 1967 treaty.",
+    "places": ["pl-unhq"],
+    "documents": ["doc-res1962"],
+    "status": "verified"
+  },
+  {
+    "id": "ev-drafts-1966",
+    "date": "1966-06-01",
+    "date_note": "Date of the first press report found. The Soviet proposal to the UN and the separate US draft both date from May–June 1966; exact transmittal dates TO VERIFY against UN documents.",
+    "phase": "negotiation",
+    "title": "Rival US and Soviet treaty drafts",
+    "summary": "Moscow asks the UN to draw up a space treaty covering the Moon and other celestial bodies. Washington, which has its own draft, responds positively.",
+    "places": ["pl-unhq", "pl-moscow"],
+    "documents": [],
+    "status": "verified"
+  },
+  {
+    "id": "ev-geneva-1966",
+    "date": "1966-07-12",
+    "end_date": "1966-08-04",
+    "phase": "negotiation",
+    "title": "Legal Subcommittee negotiates in Geneva",
+    "summary": "COPUOS's Legal Subcommittee works through the two drafts in Geneva, with a further session in New York on 12–16 September 1966. Arthur Goldberg (US) and Platon Morozov (USSR) lead the delegations.",
+    "places": ["pl-geneva"],
+    "documents": ["doc-frus-388"],
+    "status": "verified"
+  },
+  {
+    "id": "ev-agreement",
+    "date": "1966-12-08",
+    "phase": "negotiation",
+    "title": "Agreement on a treaty text announced",
+    "summary": "From the LBJ Ranch in Texas, President Johnson announces agreement on a draft treaty and calls it the most important arms control development since the 1963 Limited Test Ban Treaty. The statement was read to the press in Austin.",
+    "places": ["pl-austin", "pl-unhq"],
+    "documents": ["doc-lbj-19661208"],
+    "status": "verified"
+  },
+  {
+    "id": "ev-res2222",
+    "date": "1966-12-19",
+    "phase": "negotiation",
+    "title": "General Assembly commends the treaty: Resolution 2222 (XXI)",
+    "summary": "The Assembly commends the treaty by unanimous vote and asks the depositary governments to open it for signature and ratification as soon as possible.",
+    "places": ["pl-unhq"],
+    "documents": ["doc-res2222"],
+    "status": "verified"
+  },
+  {
+    "id": "ev-signing",
+    "date": "1967-01-27",
+    "phase": "signature",
+    "title": "Treaty opened for signature in Washington, London and Moscow",
+    "summary": "Simultaneous ceremonies in the three depositary capitals. In Moscow Foreign Minister Gromyko signs with Premier Kosygin present. In Washington, President Johnson hosts the ambassadors at the White House.",
+    "places": ["pl-washington", "pl-london", "pl-moscow"],
+    "documents": ["doc-lbj-19670127"],
+    "status": "verified"
+  },
+  {
+    "id": "ev-nl-signs",
+    "date": "1967-02-10",
+    "phase": "signature",
+    "title": "The Netherlands signs in London",
+    "summary": "Dutch papers report the Kingdom of the Netherlands' signature in London. Their summaries of the treaty's content give a useful contemporary non-US reading of Articles I, II, IV and VI–IX.",
+    "places": ["pl-london"],
+    "documents": [],
+    "status": "verified"
+  },
+  {
+    "id": "ev-france",
+    "date": "1967-08-28",
+    "phase": "aftermath",
+    "title": "France says it will join",
+    "summary": "France tells a UN subcommittee it will accede, despite boycotting the Geneva disarmament talks. Dutch commentators had already flagged this as the first arms control agreement in years that Paris would accept.",
+    "places": ["pl-unhq"],
+    "documents": [],
+    "status": "verified"
+  },
+  {
+    "id": "ev-eif",
+    "date": "1967-10-10",
+    "phase": "aftermath",
+    "title": "Entry into force",
+    "summary": "The treaty enters into force on deposit of instruments of ratification by five governments, including the three depositaries (Article XIV). Ceremonies are held in Moscow, Washington and London, a few days after the tenth anniversary of Sputnik.",
+    "places": ["pl-washington", "pl-london", "pl-moscow"],
+    "documents": [],
+    "status": "verified"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  { "id": "p-johnson", "name": "Lyndon B. Johnson", "role": "President of the United States (1963–69); announced the agreement and hosted the Washington signing" },
+  { "id": "p-goldberg", "name": "Arthur J. Goldberg", "role": "US Ambassador to the UN (1965–68); led US negotiation of the treaty" },
+  { "id": "p-morozov", "name": "Platon D. Morozov", "role": "Soviet representative in the 1966 Legal Subcommittee talks" },
+  { "id": "p-gromyko", "name": "Andrei A. Gromyko", "role": "Soviet Foreign Minister; signed in Moscow" },
+  { "id": "p-kosygin", "name": "Alexei N. Kosygin", "role": "Chairman of the USSR Council of Ministers; attended the Moscow signing" },
+  { "id": "p-stevenson", "name": "Adlai E. Stevenson", "role": "US Ambassador to the UN (1961–65)" },
+  { "id": "p-zorin", "name": "Valerian A. Zorin", "role": "Soviet Deputy Foreign Minister and UN representative" },
+  { "id": "p-fedorenko", "name": "Nikolai T. Fedorenko", "role": "Soviet Ambassador to the UN (1963–68)" },
+  { "id": "p-matsch", "name": "Franz Matsch", "role": "Austrian diplomat; chaired the UN Outer Space Committee" },
+  { "id": "p-frye", "name": "William R. Frye", "role": "UN correspondent whose dispatch ran in the Evening Star, 22 Nov 1963" }
+]

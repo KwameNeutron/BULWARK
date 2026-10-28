@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Treaty in the Papers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="The 1967 Outer Space Treaty told through contemporaneous press coverage, 1957–1967.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500..800;1,6..96,500&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="mast">
+  <div class="wrap">
+    <div class="eyebrow">Outer Space Treaty · 1957–1967 · prototype</div>
+    <h1>Treaty in the <em>Papers</em></h1>
+    <p class="lede">How the Outer Space Treaty reached the public: from Sputnik to entry into force, told through the newspapers that reported each step, with every clipping linked to its archive page.</p>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#timeline">Timeline</a>
+      <a href="#treaty">Articles I–XVII</a>
+      <a href="#sources">Archives</a>
+      <a href="#about">About &amp; method</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section data-view="timeline" id="view-timeline">
+      <div class="axis-box">
+        <svg id="axis" viewBox="0 0 1000 120" role="img" aria-label="Timeline of events and press clippings, 1957 to 1968"></svg>
+        <div class="axis-legend" id="legend"></div>
+      </div>
+      <div class="filters">
+        <label for="f-lang">Language
+          <select id="f-lang"><option value="">All</option><option value="en">English</option><option value="nl">Dutch</option></select>
+        </label>
+        <label for="f-art">Treaty article
+          <select id="f-art"><option value="">Any</option></select>
+        </label>
+        <label for="f-status">Citation status
+          <select id="f-status"><option value="">All</option><option value="verified">Verified</option><option value="partial">Partly verified</option></select>
+        </label>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="events" id="events"></div>
+    </section>
+
+    <section data-view="treaty" id="view-treaty" hidden>
+      <div class="prose">
+        <h2>The seventeen articles, and who reported them</h2>
+        <p>Each article is summarised in plain language, with the UN resolution it grew out of and the clippings that discuss its substance. The links between clippings and articles are an editor's mapping, not something the papers stated.</p>
+      </div>
+      <div class="articles" id="articles"></div>
+    </section>
+
+    <section data-view="sources" id="view-sources" hidden>
+      <div class="prose">
+        <h2>Where the coverage lives</h2>
+        <p>Newspaper archives checked for 1957–1968, what they hold for this story, how to get in, and what the rights allow.</p>
+      </div>
+      <div class="table-wrap"><table id="sources-table"></table></div>
+    </section>
+
+    <section data-view="about" id="view-about" hidden>
+      <div class="prose" id="about"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Prototype. Citations checked against archive OCR on <span id="checked"></span>. Excerpts are short quotations for commentary; follow the links for the full pages.</div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

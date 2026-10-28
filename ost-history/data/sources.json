@@ -1,0 +1,102 @@
+[
+  {
+    "id": "chronam",
+    "name": "Chronicling America (Library of Congress / NEH)",
+    "url": "https://chroniclingamerica.loc.gov/",
+    "coverage": "US newspapers 1770s–1963. The 1923–1963 portion only includes titles whose copyright was not renewed (NDNP scope expanded to 1963 in 2016).",
+    "ost_fit": "Strong for 1957–1963 (Sputnik, Res. 1721, Res. 1884, the 1963 Declaration). Nothing for 1966–67. Washington's Evening Star runs through 1963 and is the backbone for the US side.",
+    "access": "Free; full OCR text; JSON API at loc.gov (?fo=json).",
+    "rights": "LOC treats these as public domain or no known restrictions. Syndicated and wire material inside a page can have separate rights; quote short and do not re-host images until checked.",
+    "verified": true
+  },
+  {
+    "id": "delpher",
+    "name": "Delpher (KB, National Library of the Netherlands)",
+    "url": "https://www.delpher.nl/",
+    "coverage": "Dutch and Dutch-Caribbean newspapers, many titles through the 1990s.",
+    "ost_fit": "Excellent for 1966–67: dozens of articles on the drafts, the December 1966 agreement, signature, Dutch signature, French accession and entry into force. Many carry Reuters, AP, AFP and NYT wire copy.",
+    "access": "Free web viewing for most items; open SRU search API (jsru.kb.nl) with no key. Some post-war titles (e.g. De Tijd) are on-site access only.",
+    "rights": "Post-1945 papers are in copyright; KB displays them under licence. Short quotation with attribution is allowed under the Dutch citation right (Auteurswet art. 15a). Do not reproduce page images.",
+    "verified": true
+  },
+  {
+    "id": "undl",
+    "name": "UN Digital Library and UNOOSA travaux préparatoires",
+    "url": "https://digitallibrary.un.org/",
+    "coverage": "Official UN documents: resolutions, committee and subcommittee records, press releases (coverage of 1960s press releases varies).",
+    "ost_fit": "Primary anchor for every institutional milestone (Res. 1348, 1721, 1884, 1962, 2222; Legal Subcommittee summary records A/AC.105/C.2/SR.*).",
+    "access": "Free; MARC-XML search output (of=xm).",
+    "rights": "UN documents may be freely quoted with attribution.",
+    "verified": true
+  },
+  {
+    "id": "timesmachine",
+    "name": "The New York Times: TimesMachine",
+    "url": "https://timesmachine.nytimes.com/",
+    "coverage": "Page replicas 1851–2002.",
+    "ost_fit": "The US paper of record for every OST milestone. The central gap in this prototype.",
+    "access": "Subscribers only; article abstracts on nytimes.com/YYYY/MM/DD/archives/. No reliable open search from this environment.",
+    "rights": "1964+ issues are in copyright (renewal became automatic under the Copyright Renewal Act of 1992). Renewal status of 1957–63 issues TO VERIFY in the Copyright Office records. Link, cite and quote briefly; no images.",
+    "verified": true
+  },
+  {
+    "id": "gna",
+    "name": "Google News Archive",
+    "url": "https://news.google.com/newspapers",
+    "coverage": "Scanned back files of a few hundred papers. Scanning ended in 2011; browsing still works, search is limited.",
+    "ost_fit": "Possible source of free 1966–67 US and Canadian regional pages. Needs manual browsing by date.",
+    "access": "Free to view; no API.",
+    "rights": "Publishers retain copyright. Link and quote briefly.",
+    "verified": true
+  },
+  {
+    "id": "trove",
+    "name": "Trove (National Library of Australia)",
+    "url": "https://trove.nla.gov.au/",
+    "coverage": "The Canberra Times is digitised 1926–1995 with the rights holder's permission; most other Australian titles generally stop in the mid-1950s (TO VERIFY per title).",
+    "ost_fit": "Good for an Australian view of 1966–67.",
+    "access": "Free to read; API v3 needs a key (a request without one returned 401).",
+    "rights": "Digitised with permission for research or study; other uses need the publisher's consent.",
+    "verified": true
+  },
+  {
+    "id": "gallica",
+    "name": "Gallica / RetroNews (BnF)",
+    "url": "https://gallica.bnf.fr/",
+    "coverage": "French press, mostly pre-1950 on Gallica. Some later titles on RetroNews (subscription).",
+    "ost_fit": "Weak for 1966–67 as far as checked; the French position (non-participation in Geneva disarmament talks, later accession) is better covered through Dutch and US papers for now.",
+    "access": "Free (Gallica); subscription (RetroNews).",
+    "rights": "Post-war titles in copyright.",
+    "verified": false
+  },
+  {
+    "id": "eastview",
+    "name": "East View: Pravda / Izvestia archives and the Current Digest of the Soviet Press",
+    "url": "https://www.eastview.com/resources/journals/current-digest-russian-press/",
+    "coverage": "Current Digest from 1 Feb 1949 (English translations of Soviet press); separate Pravda and Izvestia digital archives.",
+    "ost_fit": "Required for a Soviet voice in the story.",
+    "access": "Institutional subscription; some university libraries; pay-per-article On Demand.",
+    "rights": "Licensed; quote briefly, no re-hosting.",
+    "verified": true
+  },
+  {
+    "id": "crest",
+    "name": "CIA CREST (FOIA Electronic Reading Room)",
+    "url": "https://www.cia.gov/readingroom/",
+    "coverage": "Declassified CIA records, including foreign press and broadcast monitoring (FBIS).",
+    "ost_fit": "Supplementary: FBIS translations of Soviet and other broadcasts on the treaty.",
+    "access": "Free.",
+    "rights": "US government works; public domain.",
+    "verified": false
+  },
+  {
+    "id": "frus-app",
+    "name": "FRUS and The American Presidency Project",
+    "url": "https://history.state.gov/historicaldocuments",
+    "coverage": "US diplomatic record and presidential statements.",
+    "ost_fit": "Context and checks for what papers reported (e.g. Goldberg cables; Johnson's 8 Dec 1966 statement).",
+    "access": "Free.",
+    "rights": "US government works; public domain.",
+    "verified": true
+  }
+]

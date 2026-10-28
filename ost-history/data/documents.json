@@ -1,0 +1,84 @@
+[
+  {
+    "id": "doc-res1348",
+    "title": "A/RES/1348 (XIII): Question of the peaceful use of outer space",
+    "date": "1958-12-13",
+    "issuer": "UN General Assembly",
+    "url": "https://digitallibrary.un.org/record/206866",
+    "rights": "un-document",
+    "status": "verified"
+  },
+  {
+    "id": "doc-res1721",
+    "title": "A/RES/1721 (XVI): International co-operation in the peaceful uses of outer space",
+    "date": "1961-12-20",
+    "issuer": "UN General Assembly",
+    "url": "https://www.unoosa.org/oosa/en/ourwork/spacelaw/treaties/travaux-preparatoires/declaration-of-legal-principles.html",
+    "url_note": "UN Digital Library holds several records for 1721 (parts A–E); the exact record for 1721 A is TO VERIFY. Linked here via UNOOSA's travaux préparatoires page.",
+    "rights": "un-document",
+    "status": "partial"
+  },
+  {
+    "id": "doc-res1884",
+    "title": "A/RES/1884 (XVIII): Question of general and complete disarmament ('no bombs in orbit')",
+    "date": "1963-10-17",
+    "issuer": "UN General Assembly",
+    "url": "https://digitallibrary.un.org/record/203960",
+    "rights": "un-document",
+    "status": "verified"
+  },
+  {
+    "id": "doc-res1962",
+    "title": "A/RES/1962 (XVIII): Declaration of Legal Principles Governing the Activities of States in the Exploration and Use of Outer Space",
+    "date": "1963-12-13",
+    "issuer": "UN General Assembly",
+    "url": "https://digitallibrary.un.org/record/203965",
+    "rights": "un-document",
+    "status": "verified"
+  },
+  {
+    "id": "doc-res2222",
+    "title": "A/RES/2222 (XXI): Treaty on Principles Governing the Activities of States in the Exploration and Use of Outer Space, including the Moon and Other Celestial Bodies",
+    "date": "1966-12-19",
+    "issuer": "UN General Assembly",
+    "url": "https://digitallibrary.un.org/record/203169",
+    "rights": "un-document",
+    "status": "verified"
+  },
+  {
+    "id": "doc-lbj-19661208",
+    "title": "Statement by the President announcing the reaching of agreement on an outer space treaty",
+    "date": "1966-12-08",
+    "issuer": "Lyndon B. Johnson (via The American Presidency Project)",
+    "url": "https://www.presidency.ucsb.edu/documents/statement-the-president-announcing-the-reaching-agreement-outer-space-treaty",
+    "rights": "us-gov",
+    "status": "verified"
+  },
+  {
+    "id": "doc-lbj-19670127",
+    "title": "Remarks at the Signing of the Treaty on Outer Space, January 27, 1967",
+    "date": "1967-01-27",
+    "issuer": "LBJ Presidential Library",
+    "url": "https://www.lbjlibrary.org/object/text/remarks-signing-treaty-outer-space-01-27-1967",
+    "rights": "us-gov",
+    "status": "verified"
+  },
+  {
+    "id": "doc-frus-388",
+    "title": "FRUS 1964–68, Vol. XXXIII, Doc. 388: Telegram from Goldberg to President Johnson and Secretary Rusk",
+    "date": "1966",
+    "issuer": "US Department of State, Office of the Historian",
+    "url": "https://history.state.gov/historicaldocuments/frus1964-68v33/d388",
+    "rights": "us-gov",
+    "status": "verified"
+  },
+  {
+    "id": "doc-ost-text",
+    "title": "Treaty text (UNOOSA)",
+    "date": "1967-01-27",
+    "issuer": "UN Office for Outer Space Affairs",
+    "url": "https://www.unoosa.org/oosa/en/ourwork/spacelaw/treaties/outerspacetreaty.html",
+    "rights": "un-document",
+    "status": "verified"
+  }
+]
