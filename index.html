@@ -94,6 +94,8 @@ nav .ic{font-size:19px;line-height:1}
 .flag span{color:var(--mut);font-size:13px}
 select,input[type=number]{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:15px;font-family:var(--mono)}
 textarea{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:var(--mono);font-size:11px;min-height:90px}
+.notice{border-color:var(--bad);font-size:13px;line-height:1.5}
+.notice p{margin-bottom:8px}
 .hide{display:none!important}
 .fade{animation:f .25s ease}
 @keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -179,13 +181,68 @@ const SLOTS = [
 const EX = {}; SLOTS.forEach(s=>s.options.forEach(o=>{o.slot=s.id;EX[o.id]=o;}));
 
 /* ============ STATE ============ */
+/* Every localStorage call can throw (Safari Private Browsing, quota full,
+   storage disabled), so all access goes through here. */
+const notices = [];   // shown as a banner at the top of every view until dismissed
+function notice(msg){ if(!notices.includes(msg)) notices.push(msg); }
 const store = {
-  get(k,d){try{const v=localStorage.getItem('bw.'+k);return v?JSON.parse(v):d}catch(e){return d}},
-  set(k,v){localStorage.setItem('bw.'+k,JSON.stringify(v))}
+  raw(k){ try{ return localStorage.getItem('bw.'+k); }catch(e){ notice('Storage is unavailable — workouts won\u2019t be saved on this device.'); return null; } },
+  // clean(): returns the sanitized value, or undefined if the shape is unusable.
+  get(k,d,clean){
+    const v=store.raw(k); if(v==null) return d;
+    let parsed; try{ parsed=JSON.parse(v); }catch(e){}
+    const ok = parsed===undefined ? undefined : clean(parsed);
+    if(ok!==undefined) return ok;
+    // Corrupted: set the raw text aside instead of letting the next save overwrite it.
+    const bak='bw.corrupt.'+k+'.'+Date.now();
+    try{ localStorage.setItem(bak,v); }catch(e){}
+    notice(`Saved “${k}” data was unreadable and has been reset. The original was kept as ${bak}.`);
+    return d;
+  },
+  set(k,v){
+    try{ localStorage.setItem('bw.'+k,JSON.stringify(v)); return true; }
+    catch(e){ notice('Couldn\u2019t save — storage is full or blocked. Copy a backup from History.'); return false; }
+  }
 };
-let prefs = store.get('prefs',{rest:75,picks:null});
-let log   = store.get('log',[]);        // [{date, entries:{exId:[{w,r},{w,r},{w,r}]}}]
-let active= store.get('active',null);   // {date, entries:{}}
+
+/* ---- shape validation: used on load and on import ---- */
+const num=(v,max)=>{ v=Math.round(+v); return Number.isFinite(v)&&v>=0 ? Math.min(v,max) : 0; };
+const isDay=d=>typeof d==='string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+const okKey=k=>/^[a-z0-9_-]{1,40}$/i.test(k) && k!=='__proto__';
+function cleanEntries(o){
+  const out={}; if(!o||typeof o!=='object'||Array.isArray(o)) return out;
+  Object.keys(o).forEach(id=>{
+    if(!okKey(id)||!Array.isArray(o[id])) return;
+    const sets=[]; o[id].forEach((x,i)=>{ if(i<3 && x && typeof x==='object') sets[i]={w:num(x.w,2000),r:num(x.r,9999)}; });
+    if(sets.length) out[id]=sets;
+  });
+  return out;
+}
+function cleanPrefs(p){
+  if(!p||typeof p!=='object') return undefined;
+  const rest=[60,75,90,120].includes(p.rest)?p.rest:75;
+  let picks=null;
+  if(p.picks&&typeof p.picks==='object'){
+    picks={}; SLOTS.forEach(s=>{ const id=p.picks[s.id]; if(s.options.some(o=>o.id===id)) picks[s.id]=id; });
+    if(Object.keys(picks).length!==SLOTS.length) picks=null;   // incomplete → back to Setup
+  }
+  return {rest,picks};
+}
+function cleanLog(l){
+  if(!Array.isArray(l)) return undefined;
+  const byDay={};
+  l.forEach(s=>{ if(s&&isDay(s.date)){ const e=cleanEntries(s.entries); if(Object.keys(e).length) byDay[s.date]={date:s.date,entries:e}; } });
+  return Object.values(byDay).sort((a,b)=>a.date<b.date?-1:1);
+}
+function cleanActive(a){
+  if(a===null) return null;
+  if(!a||!isDay(a.date)) return undefined;
+  return {date:a.date,entries:cleanEntries(a.entries)};
+}
+
+let prefs = store.get('prefs',{rest:75,picks:null},cleanPrefs);
+let log   = store.get('log',[],cleanLog);           // [{date, entries:{exId:[{w,r},{w,r},{w,r}]}}]
+let active= store.get('active',null,cleanActive);   // {date, entries:{}}
 let view  = prefs.picks ? 'train' : 'setup';
 let round = 1;
 let tempPicks = {};
@@ -218,8 +275,14 @@ function render(){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
   $('nav').style.display = (view==='setup' && !prefs.picks) ? 'none':'flex';
   const r={train:rTrain,history:rHistory,info:rInfo,setup:rSetup}[view];
-  $('app').innerHTML=r();
+  $('app').innerHTML=rNotices()+r();
   $('app').classList.remove('fade'); void $('app').offsetWidth; $('app').classList.add('fade');
+}
+
+function rNotices(){
+  if(!notices.length) return '';
+  return `<div class="card notice" role="alert">${notices.map(n=>`<p>${esc(n)}</p>`).join('')}
+    <button class="btn small ghost" onclick="notices.length=0;render()">Dismiss</button></div>`;
 }
 
 /* ============ SETUP ============ */
@@ -346,12 +409,13 @@ document.addEventListener('visibilitychange',()=>{ if(!document.hidden) tick(); 
 
 /* ============ HISTORY ============ */
 function rHistory(){
-  if(!log.length) return `<h1>History</h1><p class="sub">No sessions yet. Your saved circuits will land here, newest first.</p>`;
+  // Backup is always shown: restoring onto a fresh phone (empty log) must work.
+  if(!log.length) return `<h1>History</h1><p class="sub">No sessions yet. Your saved circuits will land here, newest first.</p>`+rBackup();
   let h=`<h1>History</h1><p class="sub">${log.length} session${log.length>1?'s':''} · data lives on this phone only</p>`;
   h+=`<h2>Progress — failure set</h2>`;
   pickIds().forEach(id=>{
     const e=EX[id];
-    const pts=log.filter(s=>s.entries[id]).map(s=>{const sets=s.entries[id];const f=sets[2]||sets[sets.length-1];return {d:s.date,v:f.r,w:f.w};});
+    const pts=log.filter(s=>s.entries[id]).map(s=>{const sets=s.entries[id];const f=sets[2]||sets.filter(Boolean).pop();return {d:s.date,v:f.r,w:f.w};});
     if(!pts.length) return;
     const last=pts[pts.length-1];
     const vals=pts.slice(-8).map(p=>p.v), mx=Math.max(...vals,1), mn=Math.min(...vals,0);
@@ -368,21 +432,27 @@ function rHistory(){
   [...log].reverse().forEach(s=>{
     const lines=Object.entries(s.entries).map(([id,sets])=>{
       const e=EX[id]; if(!e) return '';
-      return `<div class="row" style="margin-top:6px"><span>${e.name}</span><span class="sess">${sets.map(x=>(x.w>0?x.w+'×':'')+x.r).join(' · ')}</span></div>`;
+      return `<div class="row" style="margin-top:6px"><span>${e.name}</span><span class="sess">${Array.from(sets,x=>x?(x.w>0?x.w+'×':'')+x.r:'—').join(' · ')}</span></div>`;
     }).join('');
     h+=`<div class="card"><div style="font-weight:800">${fdate(s.date)}</div>${lines}</div>`;
   });
-  h+=`<h2>Backup</h2><div class="card">
+  return h+rBackup();
+}
+function rBackup(){
+  return `<h2>Backup</h2><div class="card">
     <p class="sub" style="margin-bottom:8px">Copy this JSON somewhere safe, or paste a backup below and import.</p>
-    <textarea id="io">${esc(JSON.stringify({prefs,log}))}</textarea>
+    <textarea id="io">${esc(JSON.stringify({app:'bulwark',v:1,prefs,log}))}</textarea>
     <div style="height:8px"></div><button class="btn ghost" onclick="importIO()">Import pasted backup</button></div>`;
-  return h;
 }
 function importIO(){
-  try{const d=JSON.parse($('io').value);
-    if(d.prefs&&d.log){prefs=d.prefs;log=d.log;store.set('prefs',prefs);store.set('log',log);alert('Imported ✓');render();}
-    else alert('That doesn\u2019t look like a Bulwark backup.');
-  }catch(e){alert('Invalid JSON.');}
+  let d; try{ d=JSON.parse($('io').value); }catch(e){ alert('Invalid JSON.'); return; }
+  const p=d&&cleanPrefs(d.prefs), l=d&&cleanLog(d.log);
+  if(!p||!l){ alert('That doesn\u2019t look like a Bulwark backup.'); return; }
+  if(!confirm(`Replace this phone\u2019s data with the backup (${l.length} session${l.length===1?'':'s'})?`)) return;
+  prefs=p; log=l; draft={};
+  const ok=store.set('prefs',prefs) & store.set('log',log);
+  if(ok) alert('Imported ✓'+(prefs.picks?'':' — pick your 5 moves to continue.'));
+  go(prefs.picks?'history':'setup');
 }
 
 /* ============ INFO ============ */
