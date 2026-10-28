@@ -118,6 +118,8 @@ textarea{width:100%;background:var(--panel2);color:var(--ink);border:1px solid v
 </nav>
 
 <script>
+const APP_VERSION='1.1.0';   // keep in sync with VERSION in sw.js
+
 /* ============ EXERCISE LIBRARY ============ */
 /* measure: reps | secs | steps   bw: weight optional */
 const SLOTS = [
@@ -475,12 +477,17 @@ function rInfo(){
   <h2>Emergency room, now</h2>
   <div class="flag"><b>A bulge that won't push back in + severe pain</b><span>With nausea, vomiting, fever, or skin redness over the site — signs of incarceration or strangulation. This is a same-hour problem, not a same-week one.</span></div>
   <h2>Session math</h2>
-  <div class="card" style="font-size:14px;line-height:1.6">5 moves × 3 rounds = 15 sets. At ~45 s of work and ${prefs.rest} s of rest, that's ~${Math.round((prefs.rest+45)*15/60)} minutes plus a 5-minute bike or treadmill warm-up. Rounds 1–2 leave 2–3 reps in the tank; round 3 goes to clean-form failure. When set 3 beats the target by 3+ reps two sessions running, nudge the load.</div>`;
+  <div class="card" style="font-size:14px;line-height:1.6">5 moves × 3 rounds = 15 sets. At ~45 s of work and ${prefs.rest} s of rest, that's ~${Math.round((prefs.rest+45)*15/60)} minutes plus a 5-minute bike or treadmill warm-up. Rounds 1–2 leave 2–3 reps in the tank; round 3 goes to clean-form failure. When set 3 beats the target by 3+ reps two sessions running, nudge the load.</div>
+  <p class="sub" style="margin-top:18px;text-align:center">Bulwark v${APP_VERSION}</p>`;
 }
 
 /* ============ BOOT ============ */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  // updateViaCache:'none' → the browser always revalidates sw.js itself.
+  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{
+    // Home-screen apps resume rather than reload, so also check when brought to front.
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden) reg.update().catch(()=>{}); });
+  }).catch(()=>{});
 }
 render();
 </script>
