@@ -1,4 +1,4 @@
-# Connections — private, on-device contact book
+# Connections — private contact book that reminds you to reach out
 
 An offline iPhone PWA. It ships with **no contact data**. You import your own file on
 the phone, and the app keeps it in IndexedDB encrypted with AES-256-GCM, using a key
@@ -11,6 +11,20 @@ requests, so contacts never leave the phone unless you export them.
 2. Share → **Add to Home Screen**.
 3. Open it from the home screen, choose a passcode (there is no recovery).
 4. Settings → **Import from Files** → pick `connections-import.json`.
+
+## Reminders (from the first Connections build, Oct 2026)
+
+- **Today**: who's *on your mind*, who's *due now*, birthdays in the next 2 weeks,
+  who's *coming up*, "it's been a while", plus a daily nudge with ideas for what to say.
+- **Keep in touch**: pick a cadence per person (weekly to yearly). "Done" logs the
+  touch (text, call, email, in person…) with an optional note and resets the clock.
+  "Later" snoozes. Pause reminders per person.
+- **On my mind**: flip it on, with a note on why. They stay on Today until you reach out.
+- Text / Call / Email open Messages, Phone or Mail; when you come back the app
+  offers to log it.
+- **Notifications + badge** (iOS 16.4+, home-screen app) whenever you open the app,
+  and **calendar export** (.ics) with a repeating event per person for reliable nudges.
+- Import iPhone contact cards (.vcf) and backups from the first build.
 
 ## Features
 
