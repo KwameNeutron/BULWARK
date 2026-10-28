@@ -1,0 +1,5 @@
+# The AGENT SANDBOX workflow lives in a private repo (KwameNeutron/agent-sandbox),
+# not in this public one. Keep its files out of BULWARK.
+agent-sandbox/
+reports/
+research_notes/
