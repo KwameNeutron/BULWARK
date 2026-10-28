@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; form-action 'none'; base-uri 'none'">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Connections">
+<meta name="theme-color" content="#14171C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Connections</title>
+<style>
+:root{
+  --bg:#14171C; --panel:#1C2129; --panel2:#232A34; --ink:#E9EDF2; --mut:#8B96A5;
+  --amber:#F0A63C; --amber2:#FFC46B; --good:#7FB88B; --warn:#F0C25C; --bad:#E06C5F; --line:#2C3441;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100%}
+.wrap{max-width:560px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
+h1{font-size:24px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:22px 0 8px;display:flex;gap:8px;align-items:center}
+h2 .n{font-family:var(--mono);color:var(--amber);letter-spacing:0}
+h3{font-size:19px;font-weight:800}
+.sub{color:var(--mut);font-size:13px;margin-top:2px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.empty{color:var(--mut);font-size:14px;line-height:1.5;text-align:center;padding:20px 14px;border:1px dashed var(--line);border-radius:14px}
+button{font-family:var(--sans);border:none;border-radius:12px;cursor:pointer;font-weight:700;color:inherit}
+.btn{background:var(--amber);color:#14171C;padding:13px 16px;font-size:15px;width:100%}
+.btn:disabled{opacity:.35}
+.btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.small{width:auto;padding:8px 14px;font-size:13px}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid rgba(224,108,95,.4)}
+.icon{background:var(--panel2);border:1px solid var(--line);width:40px;height:40px;border-radius:12px;font-size:18px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.icon.add{background:var(--amber);color:#14171C;border:none;font-size:24px}
+input,textarea,select{font-family:var(--sans);font-size:16px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 12px;width:100%}
+textarea{min-height:84px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--amber)}
+label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px;font-weight:600}
+.two{display:flex;gap:10px}.two>div{flex:1;min-width:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{background:var(--panel2);border:1px solid var(--line);color:var(--mut);padding:8px 11px;font-size:13px;border-radius:10px;font-weight:600}
+.seg button.on{color:var(--amber);border-color:rgba(240,166,60,.6);background:rgba(240,166,60,.08)}
+.search{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 8px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;font-size:12px;padding:6px 11px;border-radius:99px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-weight:600}
+.chip.on{color:var(--amber);border-color:rgba(240,166,60,.6);background:rgba(240,166,60,.08)}
+.letter{font-family:var(--mono);font-size:12px;color:var(--amber);padding:14px 4px 4px}
+.item{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.av{flex:0 0 40px;height:40px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:var(--amber2)}
+.av.big{width:76px;height:76px;flex-basis:76px;font-size:26px;margin:0 auto}
+.it-main{min-width:0;flex:1}
+.it-name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it-sub{color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.badge{font-family:var(--mono);font-size:10px;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:2px 7px;white-space:nowrap;background:none}
+.pill{font-size:11px;font-weight:700;border-radius:99px;padding:3px 9px;white-space:nowrap;border:1px solid var(--line);color:var(--mut)}
+.pill.bad{color:var(--bad);border-color:rgba(224,108,95,.45)}
+.pill.warn{color:var(--warn);border-color:rgba(240,194,92,.45)}
+.pill.good{color:var(--good);border-color:rgba(127,184,139,.45)}
+.pill.acc{color:var(--amber);border-color:rgba(240,166,60,.5)}
+.acts{display:flex;gap:6px;margin-top:12px}
+.acts a,.acts button{flex:1;text-align:center;text-decoration:none;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:9px 2px;font-size:12px;font-weight:700}
+.acts .done{background:rgba(127,184,139,.12);border-color:rgba(127,184,139,.45);color:var(--good)}
+.mindnote{font-size:13px;color:var(--amber2);margin-top:8px;line-height:1.4}
+.nudge{background:linear-gradient(135deg,rgba(240,166,60,.14),rgba(240,166,60,.03));border:1px solid rgba(240,166,60,.35);border-radius:14px;padding:14px;margin:14px 0 4px}
+.nudge .k{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber)}
+.nudge .t{font-size:15px;margin-top:6px;line-height:1.45}
+.actions{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.act{flex:1;max-width:90px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 4px;font-size:12px;color:var(--amber2);text-align:center;text-decoration:none;font-weight:600}
+.act span{display:block;font-size:20px;margin-bottom:3px}
+.act.off{opacity:.3;pointer-events:none}
+.stats{display:flex;gap:8px;margin:4px 0 12px}
+.stat{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat .v{font-family:var(--mono);font-size:15px;font-weight:700}
+.stat .l{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-top:3px}
+.toggle{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;cursor:pointer;gap:10px}
+.sw{width:46px;height:28px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .2s}
+.sw.on{background:var(--amber)}.sw.on::after{left:21px}
+.field{padding:11px 0;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:none}
+.field .k{font-size:12px;color:var(--mut)}
+.field a,.field .v{color:var(--ink);font-size:15px;text-decoration:none;word-break:break-word;display:block;margin-top:2px}
+.field a{color:var(--amber2)}
+.hist{font-size:14px;border-top:1px solid var(--line);padding:10px 0}
+.hist:first-child{border-top:none}
+.hist .d{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.hist .n{margin-top:3px;line-height:1.4}
+.center{text-align:center}
+.lock{min-height:80vh;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+.ok{color:var(--good);font-size:13px}
+.note{font-size:13px;color:var(--mut);line-height:1.5}
+.tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(20,23,28,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:10}
+.tabbar button{background:none;color:var(--mut);font-size:11px;font-weight:600;padding:4px 20px;position:relative;border-radius:0}
+.tabbar button span{display:block;font-size:20px}
+.tabbar button.on{color:var(--amber)}
+.tabbar .dot{position:absolute;top:0;left:calc(50% + 6px);background:var(--bad);color:#fff;font-size:10px;border-radius:99px;padding:1px 5px;font-family:var(--mono)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--bg);border:1px solid var(--line);border-bottom:none;border-radius:20px 20px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
+.x{background:var(--panel2);width:34px;height:34px;border-radius:50%;font-size:16px;color:var(--mut)}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:all .25s;z-index:90;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none!important}
+.count{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.more{display:block;margin:16px auto;width:auto}
+.multi{display:flex;gap:6px;margin-top:6px}
+.multi input{flex:1}
+.multi select{flex:0 0 96px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<nav class="tabbar hidden" id="tabbar">
+  <button data-tab="today"><span>☀︎</span>Today</button>
+  <button data-tab="list"><span>☰</span>Contacts</button>
+  <button data-tab="settings"><span>⚙</span>Settings</button>
+</nav>
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="filepick" accept=".json,application/json" class="hidden">
+<input type="file" id="vcfpick" accept=".vcf,text/vcard,text/x-vcard" class="hidden">
+<script>
+'use strict';
+/* Connections: a private, on-device contact book that reminds you to reach out.
+   All contacts live in this browser's IndexedDB, encrypted with AES-GCM using a key
+   derived from your passcode (PBKDF2-SHA256). Nothing is ever sent over the network. */
+
+const DB_NAME = 'connections', STORE = 'kv', KDF_ITERS = 310000, AUTO_LOCK_MS = 5 * 60 * 1000, BG_LOCK_MS = 60 * 1000;
+const CADENCES = [
+  {d: 7, l: 'Weekly'}, {d: 14, l: '2 weeks'}, {d: 30, l: 'Monthly'}, {d: 60, l: '2 months'},
+  {d: 90, l: 'Quarterly'}, {d: 180, l: '6 months'}, {d: 365, l: 'Yearly'},
+];
+const GROUPS = ['Family', 'Close friends', 'Friends', 'Work', 'Mentors', 'Community'];
+const TYPES = [
+  {id: 'text', l: 'Text', ic: '💬'}, {id: 'call', l: 'Call', ic: '📞'}, {id: 'email', l: 'Email', ic: '✉️'},
+  {id: 'inperson', l: 'In person', ic: '🤝'}, {id: 'social', l: 'Social', ic: '📱'}, {id: 'other', l: 'Other', ic: '✦'},
+];
+const PROMPTS = [
+  'Send a song, photo or article that made you think of them.',
+  'Ask about something they mentioned last time.',
+  'A two-line “thinking of you” text counts. It doesn’t need a reason.',
+  'Suggest a specific time for coffee or a call. Specifics get yeses.',
+  'Share a memory you have together.',
+  'Congratulate them on something, however small.',
+  'Ask for their recommendation on something. People love being asked.',
+];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const enc = new TextEncoder(), dec = new TextDecoder();
+const b64 = buf => { const u = new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const uid = () => 'k_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+/* ---------- dates ---------- */
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = () => ymd(new Date());
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return ymd(d); };
+const diff = (a, b) => Math.round((parse(a) - parse(b)) / 864e5);  // a - b in days
+const isLeap = y => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+const fmtDate = s => parse(s).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: s.slice(0, 4) === today().slice(0, 4) ? undefined : 'numeric'});
+function ago(s) {
+  if (!s) return 'Never logged';
+  const n = diff(today(), s);
+  if (n <= 0) return 'Today'; if (n === 1) return 'Yesterday';
+  if (n < 14) return `${n} days ago`; if (n < 60) return `${Math.round(n / 7)} weeks ago`;
+  if (n < 365) return `${Math.round(n / 30)} months ago`;
+  return `${(n / 365).toFixed(1).replace('.0', '')} years ago`;
+}
+const cadLabel = d => (CADENCES.find(c => c.d === d) || {l: `Every ${d} days`}).l;
+const typeOf = id => TYPES.find(t => t.id === id) || TYPES[5];
+
+/* ---------- storage ---------- */
+function idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function kvGet(k) {
+  const db = await idb();
+  return new Promise((res, rej) => { const q = db.transaction(STORE).objectStore(STORE).get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+}
+async function kvSet(k, v) {
+  const db = await idb();
+  return new Promise((res, rej) => { const t = db.transaction(STORE, 'readwrite'); t.objectStore(STORE).put(v, k); t.oncomplete = res; t.onerror = () => rej(t.error); });
+}
+async function wipeDb() {
+  (await idb()).close();
+  await new Promise(res => { const r = indexedDB.deleteDatabase(DB_NAME); r.onsuccess = r.onerror = r.onblocked = res; });
+}
+
+/* ---------- crypto ---------- */
+async function deriveKey(pass, salt) {
+  const base = await crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name: 'PBKDF2', salt, iterations: KDF_ITERS, hash: 'SHA-256'}, base, {name: 'AES-GCM', length: 256}, false, ['encrypt', 'decrypt']);
+}
+async function seal(key, obj) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, key, enc.encode(JSON.stringify(obj, (k, v) => k === '_h' ? undefined : v)));
+  return {iv: b64(iv), ct: b64(ct)};
+}
+async function open_(key, box) {
+  const pt = await crypto.subtle.decrypt({name: 'AES-GCM', iv: unb64(box.iv)}, key, unb64(box.ct));
+  return JSON.parse(dec.decode(pt));
+}
+
+/* ---------- state ---------- */
+const DEFAULT_SETTINGS = {notify: false, lastNotified: null, soonDays: 3};
+let KEY = null, META = null, contacts = [], settings = {...DEFAULT_SETTINGS};
+let view = {tab: 'today', q: '', filter: 'all', limit: 200, id: null, edit: false};
+let lockTimer = null, hiddenAt = 0, pending = null;
+
+async function save() { await kvSet('data', await seal(KEY, {contacts, settings})); updateBadge(); }
+const byId = id => contacts.find(c => c.id === id);
+const first = c => c.nameless ? c.name : c.name.split(' ')[0];
+
+function lock() {
+  KEY = null; contacts = []; closeSheet();
+  $('#tabbar').classList.add('hidden');
+  renderLock();
+}
+function bumpLock() { clearTimeout(lockTimer); if (KEY) lockTimer = setTimeout(lock, AUTO_LOCK_MS); }
+['click', 'keydown', 'touchstart'].forEach(e => document.addEventListener(e, bumpLock, {passive: true}));
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  if (!KEY) return;
+  if (hiddenAt && Date.now() - hiddenAt > BG_LOCK_MS) return lock();
+  afterReturn();
+});
+// Back from Messages / Phone / Mail: offer to log the touch.
+function afterReturn() {
+  if (pending && Date.now() - pending.at < 30 * 60e3 && byId(pending.id)) { const p = pending; pending = null; openLog(p.id, p.t); }
+  checkNotify(); if (!$('#scrim').classList.contains('on')) render();
+}
+
+/* ---------- scheduling ---------- */
+// A contact is on your reminder list once it has a cadence. Next due date is last contact + cadence
+// (or the day it was added if never contacted), pushed later by a snooze.
+const kept = c => !!c.cadence;
+function dueDate(c) {
+  let due = c.lastContact ? addDays(c.lastContact, c.cadence) : (c.keptSince || today());
+  if (c.snoozeUntil && c.snoozeUntil > due) due = c.snoozeUntil;
+  return due;
+}
+function status(c) {
+  if (!kept(c)) return {k: 'none', days: Infinity, label: '', cls: ''};
+  if (c.paused) return {k: 'paused', days: Infinity, label: 'Paused', cls: ''};
+  const d = diff(dueDate(c), today());
+  if (d < 0) return {k: 'overdue', days: d, label: `${-d}d overdue`, cls: 'bad'};
+  if (d === 0) return {k: 'due', days: 0, label: 'Due today', cls: 'warn'};
+  if (d <= settings.soonDays) return {k: 'soon', days: d, label: `In ${d}d`, cls: 'warn'};
+  return {k: 'ok', days: d, label: `In ${d}d`, cls: 'good'};
+}
+function nextBirthday(c) {
+  if (!c.birthday) return null;
+  const md = c.birthday.slice(-5), t = today();
+  let s = `${t.slice(0, 4)}-${md}`;
+  if (md === '02-29' && !isLeap(+t.slice(0, 4))) s = `${t.slice(0, 4)}-02-28`;
+  if (s < t) { const y = +t.slice(0, 4) + 1; s = (md === '02-29' && !isLeap(y)) ? `${y}-02-28` : `${y}-${md}`; }
+  return {date: s, days: diff(s, t)};
+}
+const needsYou = () => contacts.filter(c => { const k = status(c).k; return k === 'overdue' || k === 'due'; });
+const attentionCount = () => needsYou().length + contacts.filter(c => c.onMind && !(status(c).k === 'overdue' || status(c).k === 'due')).length;
+
+/* ---------- lock / setup ---------- */
+async function renderLock() {
+  META = await kvGet('meta');
+  const isNew = !META;
+  $('#app').innerHTML = `
+    <div class="lock center">
+      <div class="av big">◎</div>
+      <h1>Connections</h1>
+      <p class="sub">${isNew ? 'Private and on this phone only. Choose a passcode to encrypt your contacts.' : 'Locked. Enter your passcode.'}</p>
+      <input id="pw" type="password" autocomplete="${isNew ? 'new-password' : 'current-password'}" placeholder="Passcode">
+      ${isNew ? '<input id="pw2" type="password" autocomplete="new-password" placeholder="Confirm passcode">' : ''}
+      <div class="err" id="err"></div>
+      <button class="btn" id="go">${isNew ? 'Create' : 'Unlock'}</button>
+      ${isNew ? '<p class="note">There is no recovery. If you forget the passcode, you erase and re-import.</p>' : '<button class="btn ghost small" id="forgot" style="margin:8px auto 0">Forgot passcode</button>'}
+    </div>`;
+  const go = async () => {
+    const pw = $('#pw').value, err = $('#err');
+    if (pw.length < 6) { err.textContent = 'Use at least 6 characters.'; return; }
+    $('#go').disabled = true; err.textContent = '';
+    try {
+      if (isNew) {
+        if (pw !== $('#pw2').value) throw new Error('Passcodes do not match.');
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        KEY = await deriveKey(pw, salt);
+        META = {v: 1, salt: b64(salt), check: await seal(KEY, 'ok')};
+        await kvSet('meta', META);
+        contacts = []; settings = {...DEFAULT_SETTINGS}; await save();
+      } else {
+        const k = await deriveKey(pw, unb64(META.salt));
+        try { await open_(k, META.check); } catch { throw new Error('Wrong passcode.'); }
+        KEY = k;
+        const box = await kvGet('data');
+        const data = box ? await open_(KEY, box) : {};
+        contacts = data.contacts || []; settings = {...DEFAULT_SETTINGS, ...(data.settings || {})};
+      }
+      $('#tabbar').classList.remove('hidden');
+      bumpLock();
+      view.tab = contacts.length ? (view.tab === 'detail' && byId(view.id) ? 'detail' : 'today') : 'settings';
+      render(); updateBadge();
+      afterReturn();
+    } catch (e) { err.textContent = e.message; $('#go').disabled = false; }
+  };
+  $('#go').onclick = go;
+  $('#app').onkeydown = e => { if (e.key === 'Enter') go(); };
+  const f = $('#forgot');
+  if (f) f.onclick = async () => {
+    if (confirm('Erase everything in Connections on this phone? You can re-import your file afterwards.')) { await wipeDb(); renderLock(); }
+  };
+  setTimeout(() => $('#pw')?.focus(), 50);
+}
+
+/* ---------- shared bits ---------- */
+const initials = n => (n || '?').replace(/[^\p{L}\p{N} ]/gu, ' ').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '#';
+const subline = c => [c.title, c.org].filter(Boolean).join(' · ') || (c.emails?.[0]?.v ?? '') || (c.phones?.[0]?.d ?? '');
+const hay = c => (c._h ??= [c.name, c.org, c.title, c.notes, c.group, c.mindNote, ...(c.tags || []), ...(c.emails || []).map(e => e.v), ...(c.phones || []).map(p => p.d + ' ' + p.v.replace(/\D/g, ''))].join(' ').toLowerCase());
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2400); }
+function go(tab, id) { view.tab = tab; if (id) view.id = id; view.edit = false; closeSheet(); render(); }
+
+// Text / Call / Email remember the tap, so the app can offer to log the touch when you come back.
+function reachRow(c, withDone) {
+  const p = c.phones?.[0], e = c.emails?.[0], a = [];
+  if (p) { a.push(`<a href="sms:${esc(p.v)}" data-reach="${c.id}" data-t="text">💬 Text</a>`); a.push(`<a href="tel:${esc(p.v)}" data-reach="${c.id}" data-t="call">📞 Call</a>`); }
+  if (e) a.push(`<a href="mailto:${esc(e.v)}" data-reach="${c.id}" data-t="email">✉️ Email</a>`);
+  if (withDone) { a.push(`<button class="done" data-log="${c.id}">✓ Done</button>`); a.push(`<button data-snooze="${c.id}">⏱ Later</button>`); }
+  return `<div class="acts">${a.join('')}</div>`;
+}
+function wireRows(root = document) {
+  root.querySelectorAll('[data-reach]').forEach(el => el.addEventListener('click', () => { pending = {id: el.dataset.reach, t: el.dataset.t, at: Date.now()}; }));
+  root.querySelectorAll('[data-log]').forEach(el => el.onclick = e => { e.stopPropagation(); openLog(el.dataset.log); });
+  root.querySelectorAll('[data-snooze]').forEach(el => el.onclick = e => { e.stopPropagation(); openSnooze(el.dataset.snooze); });
+  root.querySelectorAll('[data-open]').forEach(el => el.onclick = () => { view.scroll = scrollY; view.from = view.tab; go('detail', el.dataset.open); });
+}
+function personCard(c, opts = {}) {
+  const st = status(c), bd = nextBirthday(c);
+  let meta = [c.group, kept(c) ? `Last: ${ago(c.lastContact)}` : subline(c)].filter(Boolean).join(' · ');
+  if (opts.bday && bd) meta = bd.days === 0 ? '🎂 Birthday today!' : `🎂 Birthday in ${bd.days}d · ${fmtDate(bd.date)}`;
+  const pill = opts.bday ? '' : (c.onMind && opts.mind) ? '<span class="pill acc">On your mind</span>' : st.label ? `<span class="pill ${st.cls}">${st.label}</span>` : '';
+  return `<div class="card">
+    <div class="row" data-open="${c.id}" style="cursor:pointer">
+      <div class="av">${esc(initials(c.name))}</div>
+      <div class="it-main"><div class="it-name">${c.fav ? '★ ' : ''}${esc(c.name)}</div><div class="it-sub">${esc(meta)}</div></div>${pill}
+    </div>
+    ${opts.mind && c.mindNote ? `<div class="mindnote">“${esc(c.mindNote)}”</div>` : ''}
+    ${opts.actions ? reachRow(c, true) : ''}
+  </div>`;
+}
+
+/* ---------- today ---------- */
+function renderToday() {
+  const t = today(), hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const mind = contacts.filter(c => c.onMind);
+  const due = contacts.filter(c => !c.onMind && ['overdue', 'due'].includes(status(c).k)).sort((a, b) => status(a).days - status(b).days);
+  const soon = contacts.filter(c => !c.onMind && status(c).k === 'soon').sort((a, b) => status(a).days - status(b).days);
+  const bdays = contacts.map(c => ({c, b: nextBirthday(c)})).filter(x => x.b && x.b.days <= 14).sort((a, b) => a.b.days - b.b.days);
+  const keptN = contacts.filter(kept).length, total = mind.length + due.length;
+  const longest = contacts.filter(c => kept(c) && !c.paused && c.lastContact).sort((a, b) => a.lastContact.localeCompare(b.lastContact))[0];
+  let h = `<div class="row"><div><h1>${greet}</h1><div class="sub">${total ? `${total} ${total === 1 ? 'person' : 'people'} to reach out to.` : keptN ? 'You’re all caught up. 🌿' : 'Pick who you want to stay close to.'}</div></div>
+    <div style="display:flex;gap:8px"><button class="icon" id="lockbtn" title="Lock">🔒</button><button class="icon add" id="addbtn" aria-label="Add person">＋</button></div></div>
+    <div class="nudge"><div class="k">Today's nudge</div><div class="t">${esc(PROMPTS[parse(t).getDate() % PROMPTS.length])}</div></div>`;
+  if (!keptN && !mind.length) {
+    h += `<div class="empty" style="margin-top:14px">Open anyone in <b>Contacts</b> and choose how often to <b>keep in touch</b>, or flip on <b>On my mind</b>. They'll show up here when it's time to reach out.</div>
+      <button class="btn" style="margin-top:12px" id="browse">Browse contacts</button>`;
+  }
+  h += `<h2>On your mind <span class="n">${mind.length || ''}</span></h2>`;
+  h += mind.length ? mind.map(c => personCard(c, {actions: true, mind: true})).join('')
+    : `<div class="empty">Thinking of someone? Open them and flip on <b>“On my mind”</b> so you don't forget.</div>`;
+  if (due.length) h += `<h2>Due now <span class="n">${due.length}</span></h2>` + due.map(c => personCard(c, {actions: true})).join('');
+  if (bdays.length) h += `<h2>Birthdays</h2>` + bdays.map(x => personCard(x.c, {bday: true})).join('');
+  if (soon.length) h += `<h2>Coming up</h2>` + soon.map(c => personCard(c)).join('');
+  if (!due.length && longest && diff(t, longest.lastContact) > 30) h += `<h2>It's been a while</h2>` + personCard(longest, {actions: true});
+  $('#app').innerHTML = h;
+  $('#lockbtn').onclick = lock;
+  $('#addbtn').onclick = () => go('add');
+  const b = $('#browse'); if (b) b.onclick = () => go('list');
+  wireRows();
+}
+
+/* ---------- list ---------- */
+const FILTERS = [
+  ['all', 'All', c => !c.hidden],
+  ['kept', 'Keeping close', c => kept(c)],
+  ['due', 'Due soon', c => ['overdue', 'due', 'soon'].includes(status(c).k)],
+  ['mind', 'On my mind', c => c.onMind],
+  ['fav', '★ Favorites', c => c.fav],
+  ['phone', 'Has phone', c => !c.hidden && c.phones?.length],
+  ['iphone', 'iPhone', c => !c.hidden && c.tags?.includes('iPhone')],
+  ['li', 'LinkedIn', c => !c.hidden && (c.linkedin || c.tags?.includes('LinkedIn connection'))],
+  ['named', 'Needs a name', c => !c.hidden && c.nameless],
+  ['paused', 'Paused', c => kept(c) && c.paused],
+  ['hidden', 'Hidden', c => c.hidden],
+];
+function renderList() {
+  const groups = [...new Set(contacts.map(c => c.group).filter(Boolean))].sort();
+  const filters = [...FILTERS, ...groups.map(g => ['g:' + g, g, c => c.group === g])];
+  const f = (filters.find(x => x[0] === view.filter) || FILTERS[0])[2];
+  const terms = view.q.toLowerCase().split(/\s+/).filter(Boolean);
+  let res = contacts.filter(c => f(c) && terms.every(t => hay(c).includes(t)));
+  const bySchedule = ['kept', 'due', 'paused'].includes(view.filter);
+  if (bySchedule) res = res.slice().sort((a, b) => status(a).days - status(b).days || a.name.localeCompare(b.name));
+  const shown = res.slice(0, view.limit);
+  let html = '', last = '';
+  for (const c of shown) {
+    const L = c.nameless ? '#' : (/\p{L}/u.test(c.name[0] || '') ? c.name[0].toUpperCase() : '#');
+    if (L !== last && !terms.length && !bySchedule) { html += `<div class="letter">${esc(L)}</div>`; last = L; }
+    const st = status(c);
+    html += `<div class="item" data-open="${c.id}"><div class="av">${esc(initials(c.name))}</div>
+      <div class="it-main"><div class="it-name">${c.fav ? '★ ' : ''}${c.onMind ? '◉ ' : ''}${esc(c.name)}</div><div class="it-sub">${esc(subline(c))}</div></div>
+      ${st.label ? `<span class="pill ${st.cls}">${st.label}</span>` : ''}</div>`;
+  }
+  $('#app').innerHTML = `
+    <div class="row"><div><h1>Contacts</h1><div class="sub">${contacts.filter(c => !c.hidden).length.toLocaleString()} contacts · ${contacts.filter(kept).length} keeping close</div></div>
+      <div style="display:flex;gap:8px"><button class="icon" id="lockbtn" title="Lock">🔒</button><button class="icon add" id="addbtn" aria-label="Add person">＋</button></div></div>
+    <div class="search">
+      <input id="q" type="search" placeholder="Search name, company, email, phone, notes" value="${esc(view.q)}" autocomplete="off">
+      <div class="chips">${filters.map(([k, l]) => `<button class="chip ${view.filter === k ? 'on' : ''}" data-f="${esc(k)}">${esc(l)}</button>`).join('')}</div>
+    </div>
+    <div class="count">${res.length.toLocaleString()} result${res.length === 1 ? '' : 's'}</div>
+    <div id="list">${html || '<p class="note" style="padding:20px 0">Nothing here.</p>'}</div>
+    ${res.length > shown.length ? `<button class="btn ghost small more" id="more">Show more (${(res.length - shown.length).toLocaleString()} left)</button>` : ''}`;
+  const q = $('#q');
+  q.oninput = () => { view.q = q.value; view.limit = 200; const pos = q.selectionStart; renderList(); const n = $('#q'); n.focus(); n.setSelectionRange(pos, pos); };
+  document.querySelectorAll('.chip').forEach(b => b.onclick = () => { view.filter = b.dataset.f; view.limit = 200; renderList(); });
+  $('#lockbtn').onclick = lock;
+  $('#addbtn').onclick = () => go('add');
+  const m = $('#more'); if (m) m.onclick = () => { view.limit += 400; renderList(); };
+  wireRows();
+}
+
+/* ---------- detail ---------- */
+function renderDetail() {
+  const c = byId(view.id);
+  if (!c) return go('list');
+  if (view.edit) return renderEdit(c);
+  const p0 = c.phones?.[0], e0 = c.emails?.[0], st = status(c), bd = nextBirthday(c);
+  const log = (c.log || []).slice().sort((a, b) => b.d.localeCompare(a.d));
+  const fields = [
+    ...(c.phones || []).map(p => `<div class="field"><div class="k">${esc(p.l || 'phone')}</div><a href="tel:${esc(p.v)}" data-reach="${c.id}" data-t="call">${esc(p.d)}</a></div>`),
+    ...(c.emails || []).map(e => `<div class="field"><div class="k">${esc(e.l || 'email')}</div><a href="mailto:${esc(e.v)}" data-reach="${c.id}" data-t="email">${esc(e.v)}</a></div>`),
+    c.linkedin ? `<div class="field"><div class="k">LinkedIn</div><a href="${esc(c.linkedin)}" target="_blank" rel="noopener noreferrer">${esc(c.linkedin.replace(/^https:\/\/www\./, ''))}</a></div>` : '',
+    bd ? `<div class="field"><div class="k">Birthday</div><div class="v">🎂 ${esc(fmtDate(bd.date))} (${bd.days === 0 ? 'today' : `in ${bd.days}d`})</div></div>` : '',
+    c.notes ? `<div class="field"><div class="k">Notes</div><div class="v" style="white-space:pre-wrap">${esc(c.notes)}</div></div>` : '',
+    c.tags?.length ? `<div class="field"><div class="k">Tags</div><div class="v">${c.tags.map(t => `<span class="badge">${esc(t)}</span>`).join(' ')}</div></div>` : '',
+    c.sources?.length ? `<div class="field"><div class="k">From</div><div class="v note">${esc(c.sources.join(' · '))}</div></div>` : '',
+  ].join('');
+  $('#app').innerHTML = `
+    <div class="row"><button class="btn ghost small" id="back">‹ Back</button>
+      <div style="display:flex;gap:8px"><button class="icon" id="fav">${c.fav ? '★' : '☆'}</button><button class="btn ghost small" id="edit">Edit</button></div></div>
+    <div class="center" style="margin-top:16px"><div class="av big">${esc(initials(c.name))}</div>
+      <h1 style="margin-top:10px">${esc(c.name)}</h1><div class="sub">${esc([c.title, c.org].filter(Boolean).join(' · '))}</div>
+      ${c.group ? `<div class="sub">${esc(c.group)}</div>` : ''}
+      ${c.hidden ? '<div class="sub" style="color:var(--amber)">Hidden from the main list</div>' : ''}</div>
+    <div class="actions">
+      <a class="act ${p0 ? '' : 'off'}" href="${p0 ? 'tel:' + esc(p0.v) : '#'}" data-reach="${c.id}" data-t="call"><span>✆</span>call</a>
+      <a class="act ${p0 ? '' : 'off'}" href="${p0 ? 'sms:' + esc(p0.v) : '#'}" data-reach="${c.id}" data-t="text"><span>✉︎</span>text</a>
+      <a class="act ${e0 ? '' : 'off'}" href="${e0 ? 'mailto:' + esc(e0.v) : '#'}" data-reach="${c.id}" data-t="email"><span>@</span>email</a>
+      <a class="act ${c.linkedin ? '' : 'off'}" href="${c.linkedin ? esc(c.linkedin) : '#'}" target="_blank" rel="noopener noreferrer"><span>in</span>LinkedIn</a>
+    </div>
+    <div class="toggle" id="mind"><div style="font-weight:700">On my mind</div><div class="sw ${c.onMind ? 'on' : ''}"></div></div>
+    ${c.onMind ? `<input id="mindnote" style="margin-top:8px" placeholder="Why? (e.g. ask about the new job)" value="${esc(c.mindNote || '')}">` : ''}
+    <h2>Keep in touch</h2>
+    <div class="seg" id="cad"><button data-d="0" class="${kept(c) ? '' : 'on'}">Off</button>${CADENCES.map(x => `<button data-d="${x.d}" class="${c.cadence === x.d ? 'on' : ''}">${x.l}</button>`).join('')}</div>
+    ${kept(c) ? `
+      <div class="stats" style="margin-top:12px">
+        <div class="stat"><div class="v">${c.lastContact ? esc(fmtDate(c.lastContact)) : '—'}</div><div class="l">Last</div></div>
+        <div class="stat"><div class="v" style="color:var(--${st.cls || 'mut'})">${c.paused ? '—' : esc(fmtDate(dueDate(c)))}</div><div class="l">${c.paused ? 'Paused' : 'Next'}</div></div>
+        <div class="stat"><div class="v">${(c.log || []).length}</div><div class="l">Touches</div></div>
+      </div>
+      <div class="acts"><button class="done" data-log="${c.id}">✓ Log a touch</button><button data-snooze="${c.id}">⏱ Later</button><button id="pause">${c.paused ? '▶ Resume' : '⏸ Pause'}</button></div>` :
+      `<div class="acts"><button class="done" data-log="${c.id}">✓ Log a touch</button></div>`}
+    <h2>Details</h2>
+    <div class="card">${fields || '<p class="note">No details yet. Tap Edit to add some.</p>'}</div>
+    ${log.length ? `<h2>History</h2><div class="card">${log.map(e => `<div class="hist"><div class="row"><span class="d">${typeOf(e.t).ic} ${esc(typeOf(e.t).l)} · ${esc(fmtDate(e.d))}</span><button class="badge" data-dellog="${esc(e.id)}">remove</button></div>${e.n ? `<div class="n">${esc(e.n)}</div>` : ''}</div>`).join('')}</div>` : ''}
+    <button class="btn ghost" id="vcf" style="margin-top:6px">Add to iPhone Contacts</button>
+    <p class="note" style="margin-top:6px">Opens a contact card that iOS lets you save to the Contacts app.</p>`;
+  $('#back').onclick = () => { go(view.from === 'today' ? 'today' : 'list'); requestAnimationFrame(() => scrollTo(0, view.scroll || 0)); };
+  $('#edit').onclick = () => { view.edit = true; render(); };
+  $('#fav').onclick = async () => { c.fav = !c.fav; await save(); renderDetail(); };
+  $('#mind').onclick = async () => { c.onMind = !c.onMind; if (!c.onMind) c.mindNote = ''; delete c._h; await save(); renderDetail(); if (c.onMind) $('#mindnote').focus(); };
+  const mn = $('#mindnote'); if (mn) mn.onchange = async () => { c.mindNote = mn.value.trim(); delete c._h; await save(); };
+  document.querySelectorAll('#cad button').forEach(b => b.onclick = async () => {
+    const d = +b.dataset.d;
+    if (d && !c.cadence) c.keptSince = today();
+    c.cadence = d || null; if (!d) { c.paused = false; c.snoozeUntil = null; }
+    await save(); renderDetail();
+    if (d) toast(`Next nudge for ${first(c)}: ${fmtDate(dueDate(c))}`);
+  });
+  const pz = $('#pause'); if (pz) pz.onclick = async () => { c.paused = !c.paused; await save(); renderDetail(); };
+  document.querySelectorAll('[data-dellog]').forEach(b => b.onclick = async () => {
+    c.log = c.log.filter(e => e.id !== b.dataset.dellog);
+    c.lastContact = c.log.length ? c.log.map(e => e.d).sort().pop() : null;
+    await save(); renderDetail();
+  });
+  $('#vcf').onclick = () => download(`${(c.name || 'contact').replace(/[^\w .-]/g, '')}.vcf`, vcard([c]), 'text/vcard');
+  wireRows();
+}
+
+function renderEdit(c) {
+  const isNew = !c.id;
+  const groups = [...new Set([...GROUPS, ...contacts.map(x => x.group).filter(Boolean)])];
+  const rowsOf = (list, kind) => (list.length ? list : [{v: '', l: ''}]).map(x => `
+    <div class="multi" data-kind="${kind}"><input value="${esc(kind === 'phone' ? (x.d || x.v) : x.v)}" placeholder="${kind === 'phone' ? '(202) 555-0100' : 'name@example.com'}" type="${kind === 'phone' ? 'tel' : 'email'}">
+    <select>${(kind === 'phone' ? ['mobile', 'home', 'work', 'main', 'other'] : ['personal', 'work', 'other']).map(o => `<option ${x.l === o ? 'selected' : ''}>${o}</option>`).join('')}</select></div>`).join('');
+  $('#app').innerHTML = `
+    <div class="row"><button class="btn ghost small" id="cancel">Cancel</button><h1 style="font-size:17px">${isNew ? 'Add someone' : 'Edit'}</h1><button class="btn small" id="save">Save</button></div>
+    <label>Name</label><input id="f-name" value="${esc(c.nameless ? '' : c.name)}" placeholder="${esc(c.nameless ? c.name : 'Full name')}" autocomplete="off">
+    <div class="two"><div><label>Organization</label><input id="f-org" value="${esc(c.org)}"></div><div><label>Title</label><input id="f-title" value="${esc(c.title)}"></div></div>
+    <label>Keep in touch</label>
+    <div class="seg" id="f-cad"><button type="button" data-d="0" class="${c.cadence ? '' : 'on'}">Off</button>${CADENCES.map(x => `<button type="button" data-d="${x.d}" class="${c.cadence === x.d ? 'on' : ''}">${x.l}</button>`).join('')}</div>
+    <label>Group</label><input id="f-group" list="grouplist" value="${esc(c.group || '')}" placeholder="Family, Friends, Work…">
+    <datalist id="grouplist">${groups.map(g => `<option value="${esc(g)}">`).join('')}</datalist>
+    <label>Phones <button class="badge" id="addp" type="button">+ add</button></label><div id="phones">${rowsOf(c.phones || [], 'phone')}</div>
+    <label>Emails <button class="badge" id="adde" type="button">+ add</button></label><div id="emails">${rowsOf(c.emails || [], 'email')}</div>
+    <div class="two"><div><label>Birthday</label><input id="f-bday" type="date" value="${esc(c.birthday && c.birthday.length === 10 ? c.birthday : '')}"></div>
+      <div><label>Last talked</label><input id="f-last" type="date" max="${today()}" value="${esc(c.lastContact || '')}"></div></div>
+    <label>LinkedIn URL</label><input id="f-li" value="${esc(c.linkedin || '')}" type="url" placeholder="https://www.linkedin.com/in/...">
+    <label>Tags (comma separated)</label><input id="f-tags" value="${esc((c.tags || []).join(', '))}">
+    <label>Notes</label><textarea id="f-notes" placeholder="Kids' names, what they're working on, things to ask about…">${esc(c.notes)}</textarea>
+    ${isNew ? '<div class="toggle" id="f-mind"><div style="font-weight:700">On my mind right now</div><div class="sw"></div></div>' : ''}
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="f-hidden" style="width:auto" ${c.hidden ? 'checked' : ''}> Hide from the main list</label>
+    ${isNew ? '' : '<button class="btn danger" id="del" style="margin-top:24px">Delete contact</button>'}`;
+  const seg = $('#f-cad');
+  seg.querySelectorAll('button').forEach(b => b.onclick = () => { seg.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); });
+  const fm = $('#f-mind'); if (fm) fm.onclick = () => fm.querySelector('.sw').classList.toggle('on');
+  $('#addp').onclick = () => $('#phones').insertAdjacentHTML('beforeend', rowsOf([], 'phone'));
+  $('#adde').onclick = () => $('#emails').insertAdjacentHTML('beforeend', rowsOf([], 'email'));
+  $('#cancel').onclick = () => { view.edit = false; go(isNew ? (view.from || 'today') : 'detail'); };
+  $('#save').onclick = async () => {
+    const name = $('#f-name').value.trim();
+    const phones = [...document.querySelectorAll('[data-kind=phone]')].map(r => normPhone(r.querySelector('input').value, r.querySelector('select').value)).filter(Boolean);
+    const emails = [...document.querySelectorAll('[data-kind=email]')].map(r => ({v: r.querySelector('input').value.trim().toLowerCase(), l: r.querySelector('select').value})).filter(e => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(e.v));
+    if (!name && !phones.length && !emails.length) { toast('Add a name, phone or email'); return; }
+    const cad = +(seg.querySelector('.on')?.dataset.d || 0) || null;
+    const last = $('#f-last').value || null;
+    if (cad && !c.cadence) c.keptSince = today();
+    if (last !== (c.lastContact || null)) {
+      c.snoozeUntil = null;
+      if (last && !(c.log || []).some(e => e.d === last)) (c.log ||= []).push({id: uid(), d: last, t: 'other', n: ''});
+    }
+    Object.assign(c, {
+      name: name || (c.nameless ? c.name : '') || emails[0]?.v || phones[0]?.d, nameless: !name,
+      org: $('#f-org').value.trim(), title: $('#f-title').value.trim(), phones, emails, cadence: cad,
+      group: $('#f-group').value.trim(), birthday: $('#f-bday').value || null, lastContact: last,
+      linkedin: $('#f-li').value.trim() || null, notes: $('#f-notes').value,
+      tags: $('#f-tags').value.split(',').map(t => t.trim()).filter(Boolean), hidden: $('#f-hidden').checked,
+      updated: new Date().toISOString(),
+    });
+    if (!cad) { c.paused = false; c.snoozeUntil = null; }
+    if (!c.nameless) delete c.nameless;
+    delete c._h;
+    if (isNew) { c.id = uid(); c.sources = ['Added in Connections']; c.onMind = fm.querySelector('.sw').classList.contains('on'); contacts.push(c); }
+    sortContacts(); await save();
+    view.edit = false; go('detail', c.id);
+    if (isNew) toast(`${first(c)} added`);
+  };
+  const d = $('#del');
+  if (d) d.onclick = async () => {
+    if (!confirm(`Delete ${c.name} and their history?`)) return;
+    contacts = contacts.filter(x => x !== c); await save(); view.edit = false; go('list');
+  };
+}
+
+function normPhone(raw, label) {
+  const s = raw.trim(); if (!s) return null;
+  const d = s.replace(/\D/g, '');
+  let v;
+  if (s.startsWith('+')) v = '+' + d;
+  else if (d.length === 10) v = '+1' + d;
+  else if (d.length === 11 && d[0] === '1') v = '+' + d;
+  else v = d;
+  const disp = /^\+1\d{10}$/.test(v) ? `(${v.slice(2, 5)}) ${v.slice(5, 8)}-${v.slice(8)}` : v;
+  return {v, d: disp, l: label};
+}
+function sortContacts() {
+  contacts.sort((a, b) => (!!a.hidden - !!b.hidden) || (!!a.nameless - !!b.nameless) || a.name.localeCompare(b.name, undefined, {sensitivity: 'base'}));
+}
+
+/* ---------- sheets: log a touch, snooze ---------- */
+function openSheet(html) { $('#sheet').innerHTML = html; $('#scrim').classList.add('on'); $('#sheet').scrollTop = 0; }
+function closeSheet() { $('#scrim').classList.remove('on'); }
+$('#scrim').addEventListener('click', e => { if (e.target.id === 'scrim') closeSheet(); });
+const sheetTop = title => `<div class="row" style="margin-bottom:6px"><h3>${esc(title)}</h3><button class="x" id="sx" aria-label="Close">✕</button></div>`;
+
+function openLog(id, t = 'text') {
+  const c = byId(id); if (!c) return;
+  openSheet(`${sheetTop(`Reached out to ${first(c)}?`)}
+    <label>How</label>
+    <div class="seg" id="l-type">${TYPES.map(x => `<button type="button" data-t="${x.id}" class="${x.id === t ? 'on' : ''}">${x.ic} ${x.l}</button>`).join('')}</div>
+    <label>When</label><input id="l-date" type="date" max="${today()}" value="${today()}">
+    <label>Note (optional)</label><textarea id="l-note" placeholder="What did you talk about? Anything to follow up on?"></textarea>
+    <button class="btn" style="margin-top:18px" id="l-save">Log it</button>`);
+  $('#sx').onclick = closeSheet;
+  const seg = $('#l-type');
+  seg.querySelectorAll('button').forEach(b => b.onclick = () => { seg.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); });
+  $('#l-save').onclick = async () => {
+    const d = $('#l-date').value || today();
+    (c.log ||= []).push({id: uid(), d, t: seg.querySelector('.on')?.dataset.t || 'other', n: $('#l-note').value.trim()});
+    if (!c.lastContact || d >= c.lastContact) c.lastContact = d;
+    c.snoozeUntil = null; c.onMind = false; c.mindNote = ''; delete c._h;
+    await save(); closeSheet(); render();
+    toast(kept(c) ? `Nice. Next nudge for ${first(c)}: ${fmtDate(dueDate(c))}` : 'Logged');
+  };
+}
+function openSnooze(id) {
+  const c = byId(id); if (!c) return;
+  const opts = [[1, 'Tomorrow'], [3, 'In 3 days'], [7, 'Next week'], [14, 'In 2 weeks'], [30, 'Next month']];
+  openSheet(`${sheetTop(`Remind me about ${first(c)}…`)}
+    <div style="display:grid;gap:8px;margin-top:10px">${opts.map(([n, l]) => `<button class="btn ghost" data-n="${n}">${l}</button>`).join('')}</div>`);
+  $('#sx').onclick = closeSheet;
+  document.querySelectorAll('#sheet [data-n]').forEach(b => b.onclick = async () => {
+    c.snoozeUntil = addDays(today(), +b.dataset.n);
+    if (!c.cadence) { c.cadence = 30; c.keptSince = today(); c.lastContact ??= null; }
+    c.onMind = false;
+    await save(); closeSheet(); render(); toast(`Snoozed until ${fmtDate(c.snoozeUntil)}`);
+  });
+}
+
+/* ---------- settings / import / export ---------- */
+function renderSettings(msg) {
+  const hiddenN = contacts.filter(c => c.hidden).length, notifOK = 'Notification' in window;
+  $('#app').innerHTML = `
+    <h1>Settings</h1>
+    <div class="sub">${contacts.length.toLocaleString()} contacts stored, ${contacts.filter(kept).length} keeping close, ${hiddenN.toLocaleString()} hidden. Encrypted on this phone only.</div>
+    ${msg ? `<p class="ok" style="margin-top:10px">${esc(msg)}</p>` : ''}
+    <h2>Reminders</h2>
+    <div class="toggle" id="notify"><div><div style="font-weight:700">Notify me when people are due</div><div class="note" style="margin-top:3px">${notifOK ? 'Shows a notification and app badge when you open Connections (home-screen app, iOS 16.4+). First names appear on the lock screen.' : 'Not supported in this browser.'}</div></div><div class="sw ${settings.notify ? 'on' : ''}"></div></div>
+    <div class="card" style="margin-top:10px">
+      <div style="font-weight:700">Calendar reminders</div>
+      <p class="note">Phones don't let offline web apps wake themselves up, so for reliable nudges add a repeating calendar event for each person you're keeping close. Re-export after changes. Note this copies their names, phone and email into your calendar.</p>
+      <button class="btn ghost small" style="margin-top:10px" id="ics">Download calendar (.ics)</button>
+    </div>
+    <label>“Coming up” window</label>
+    <div class="seg" id="soon">${[1, 3, 5, 7].map(d => `<button data-d="${d}" class="${settings.soonDays === d ? 'on' : ''}">${d} day${d > 1 ? 's' : ''}</button>`).join('')}</div>
+    <h2>Import</h2>
+    <div class="card">
+      <p class="note">Pick <b>connections-import.json</b> (or a Connections backup) from the Files app. Contacts are matched by ID, email, phone or LinkedIn, so importing twice will not create duplicates. Your notes, reminders and history are kept.</p>
+      <button class="btn" id="imp" style="margin-top:12px">Import contacts file (.json)</button>
+      <button class="btn ghost" id="impvcf" style="margin-top:8px">Import contact cards (.vcf)</button>
+      ${'contacts' in navigator && 'ContactsManager' in window ? '<button class="btn ghost" id="pick" style="margin-top:8px">Import from phone contacts</button>' : ''}
+      <p class="note" style="margin-top:8px">For a .vcf on iPhone: Contacts → pick someone → Share Contact → Save to Files.</p>
+    </div>
+    <h2>Backup</h2>
+    <div class="card">
+      <p class="note">An encrypted backup can only be opened with your passcode. Save it to Files or iCloud Drive now and then.</p>
+      <button class="btn ghost" id="bk" style="margin-top:12px">Save encrypted backup</button>
+      <button class="btn ghost" id="vcfall" style="margin-top:8px">Export all visible as vCard (.vcf)</button>
+    </div>
+    <h2>Security</h2>
+    <div class="card">
+      <p class="note">Locks after 5 minutes idle or 1 minute in the background. Nothing in this app talks to the internet; contacts never leave this phone unless you export them.</p>
+      <button class="btn ghost" id="lk" style="margin-top:12px">Lock now</button>
+      <button class="btn danger" id="wipe" style="margin-top:8px">Erase all data on this phone</button>
+    </div>
+    <div class="note center" style="margin-top:24px">Connections · v2</div>`;
+  $('#notify').onclick = toggleNotify;
+  $('#ics').onclick = exportICS;
+  document.querySelectorAll('#soon button').forEach(b => b.onclick = async () => { settings.soonDays = +b.dataset.d; await save(); renderSettings(); });
+  $('#imp').onclick = () => $('#filepick').click();
+  $('#impvcf').onclick = () => $('#vcfpick').click();
+  const pk = $('#pick'); if (pk) pk.onclick = pickContacts;
+  $('#bk').onclick = async () => download(`connections-backup-${today()}.json`,
+    JSON.stringify({format: 'connections/encrypted-v1', salt: META.salt, iters: KDF_ITERS, box: await seal(KEY, {contacts, settings})}), 'application/json');
+  $('#vcfall').onclick = () => download('connections.vcf', vcard(contacts.filter(c => !c.hidden)), 'text/vcard');
+  $('#lk').onclick = lock;
+  $('#wipe').onclick = async () => {
+    if (!confirm('Erase every contact stored in Connections on this phone?')) return;
+    if (prompt('Type ERASE to confirm') !== 'ERASE') return;
+    await wipeDb(); KEY = null; contacts = []; $('#tabbar').classList.add('hidden'); updateBadge(0); renderLock();
+  };
+}
+
+$('#filepick').onchange = async e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file) return;
+  try {
+    let data = JSON.parse(await file.text());
+    if (data.format === 'connections/encrypted-v1') {
+      const pw = prompt('Passcode used for this backup');
+      if (pw == null) return;
+      const k = await deriveKey(pw, unb64(data.salt));
+      try { data = await open_(k, data.box); } catch { throw new Error('That passcode does not open this backup.'); }
+      if (data.settings) settings = {...settings, ...data.settings};
+    }
+    // Backups from the first Connections build (Oct 2026) used {people:[...]} with single phone/email fields.
+    if (Array.isArray(data.people)) data.contacts = data.people.map(fromV1);
+    if (!Array.isArray(data.contacts)) throw new Error('This file has no contacts in it.');
+    const r = mergeIn(data.contacts);
+    sortContacts(); await save();
+    renderSettings(`Imported: ${r.added.toLocaleString()} new, ${r.updated.toLocaleString()} merged into existing.`);
+  } catch (err) { alert('Import failed: ' + err.message); }
+};
+$('#vcfpick').onchange = async e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file) return;
+  const r = mergeIn(parseVCF(await file.text()));
+  sortContacts(); await save();
+  renderSettings(r.added + r.updated ? `Imported: ${r.added} new, ${r.updated} merged into existing.` : 'No contacts found in that file.');
+};
+async function pickContacts() {
+  try {
+    const res = await navigator.contacts.select(['name', 'tel', 'email'], {multiple: true});
+    const r = mergeIn(res.map(x => fromV1({name: (x.name || [])[0] || '', phone: (x.tel || [])[0] || '', email: (x.email || [])[0] || ''})).filter(c => c.name));
+    sortContacts(); await save(); renderSettings(`Imported: ${r.added} new, ${r.updated} merged into existing.`);
+  } catch { toast('Contact import cancelled'); }
+}
+function fromV1(p) {
+  const ph = p.phone ? normPhone(p.phone, '') : null;
+  const em = p.email ? p.email.trim().toLowerCase() : '';
+  const c = {...p, emails: em ? [{v: em, l: ''}] : [], phones: ph ? [ph] : [], org: p.org || '', title: p.title || '', tags: p.tags || [], notes: p.notes || ''};
+  delete c.phone; delete c.email;
+  if (p.created && p.cadence) c.keptSince = p.created;
+  return c;
+}
+function parseVCF(text) {
+  const lines = text.replace(/\r?\n[ \t]/g, '').split(/\r?\n/);   // unfold continuation lines
+  const out = []; let c = null;
+  for (const line of lines) {
+    const i = line.indexOf(':'); if (i < 0) continue;
+    const head = line.slice(0, i), key = head.split(';')[0].split('.').pop().toUpperCase();
+    const val = line.slice(i + 1).replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/gi, '\n').trim();
+    const typ = (head.match(/TYPE=([^;:]+)/i)?.[1] || '').toLowerCase();
+    if (key === 'BEGIN') c = {name: '', org: '', title: '', phones: [], emails: [], tags: [], notes: '', sources: ['vCard import']};
+    else if (key === 'END' && c) { if (c.name || c.phones.length || c.emails.length) { if (!c.name) { c.name = c.emails[0]?.v || c.phones[0].d; c.nameless = true; } out.push(c); } c = null; }
+    else if (!c) continue;
+    else if (key === 'FN') c.name = val;
+    else if (key === 'N' && !c.name) { const [l, f] = val.split(';'); c.name = [f, l].filter(Boolean).join(' '); }
+    else if (key === 'ORG') c.org = val.split(';')[0];
+    else if (key === 'TITLE') c.title = val;
+    else if (key === 'TEL') { const p = normPhone(val, /cell|iphone|mobile/.test(typ) ? 'mobile' : /home/.test(typ) ? 'home' : /work/.test(typ) ? 'work' : ''); if (p) c.phones.push(p); }
+    else if (key === 'EMAIL') c.emails.push({v: val.toLowerCase(), l: /work/.test(typ) ? 'work' : ''});
+    else if (key === 'URL' && /linkedin\.com/i.test(val)) c.linkedin = val;
+    else if (key === 'NOTE') c.notes = val;
+    else if (key === 'BDAY') { const m = val.replace(/-/g, '').match(/(\d{4})(\d{2})(\d{2})/); if (m) c.birthday = `${m[1]}-${m[2]}-${m[3]}`; }
+  }
+  return out;
+}
+
+function mergeIn(incoming) {
+  const idx = new Map();
+  const keys = c => [c.id && 'i:' + c.id, ...(c.rolodexIds || []).map(x => 'r:' + x), ...(c.emails || []).map(e => 'e:' + e.v), ...(c.phones || []).map(p => 'p:' + p.v), c.linkedin && 'l:' + c.linkedin.toLowerCase()].filter(Boolean);
+  contacts.forEach(c => keys(c).forEach(k => idx.set(k, c)));
+  let added = 0, updated = 0;
+  for (const n of incoming) {
+    if (!n || typeof n.name !== 'string') continue;
+    const hit = keys(n).map(k => idx.get(k)).find(Boolean);
+    if (!hit) {
+      const c = {...n, id: n.id || uid()};
+      delete c._h; contacts.push(c); keys(c).forEach(k => idx.set(k, c)); added++; continue;
+    }
+    // keep the user's edits; fill gaps and union lists
+    for (const f of ['org', 'title', 'linkedin', 'birthday', 'group', 'cadence', 'keptSince']) if (!hit[f] && n[f]) hit[f] = n[f];
+    if (n.lastContact && (!hit.lastContact || n.lastContact > hit.lastContact)) hit.lastContact = n.lastContact;
+    if (n.onMind && !hit.onMind) { hit.onMind = true; hit.mindNote = n.mindNote || ''; }
+    if (hit.nameless && n.name && !n.nameless) { hit.name = n.name; delete hit.nameless; }
+    const uni = (a = [], b = [], k = 'v') => { const s = new Set(a.map(x => x[k])); return [...a, ...b.filter(x => !s.has(x[k]))]; };
+    hit.emails = uni(hit.emails, n.emails); hit.phones = uni(hit.phones, n.phones);
+    if (n.log?.length) hit.log = uni(hit.log, n.log, 'id');
+    hit.tags = [...new Set([...(hit.tags || []), ...(n.tags || [])])];
+    hit.sources = [...new Set([...(hit.sources || []), ...(n.sources || [])])];
+    hit.rolodexIds = [...new Set([...(hit.rolodexIds || []), ...(n.rolodexIds || [])])];
+    if (n.notes && !(hit.notes || '').includes(n.notes)) hit.notes = [hit.notes, n.notes].filter(Boolean).join('\n');
+    delete hit._h; keys(hit).forEach(k => idx.set(k, hit)); updated++;
+  }
+  return {added, updated};
+}
+
+function vcard(list) {
+  const v = s => String(s || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1');
+  return list.map(c => {
+    const parts = c.nameless ? [] : c.name.split(' ');
+    const last = parts.length > 1 ? parts.pop() : '';
+    const L = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${v(c.name)}`, `N:${v(last)};${v(parts.join(' '))};;;`];
+    if (c.org) L.push(`ORG:${v(c.org)}`);
+    if (c.title) L.push(`TITLE:${v(c.title)}`);
+    (c.phones || []).forEach(p => L.push(`TEL;TYPE=${({mobile: 'CELL', home: 'HOME', work: 'WORK', fax: 'FAX', main: 'MAIN'})[p.l] || 'VOICE'}:${p.v}`));
+    (c.emails || []).forEach(e => L.push(`EMAIL;TYPE=${e.l === 'work' ? 'WORK' : 'INTERNET'}:${e.v}`));
+    if (c.birthday) L.push(`BDAY:${c.birthday}`);
+    if (c.linkedin) L.push(`URL:${c.linkedin}`);
+    if (c.notes) L.push(`NOTE:${v(c.notes)}`);
+    L.push('END:VCARD');
+    return L.join('\r\n');
+  }).join('\r\n') + '\r\n';
+}
+
+function exportICS() {
+  const active = contacts.filter(c => kept(c) && !c.paused);
+  if (!active.length) { toast('Choose some people to keep in touch with first'); return; }
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+  const icsEsc = s => String(s).replace(/[\\,;]/g, m => '\\' + m).replace(/\n/g, '\\n');
+  const ev = active.map(c => {
+    let start = dueDate(c); if (start < today()) start = today();
+    return ['BEGIN:VEVENT', `UID:connections-${c.id}@local`, `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${start.replace(/-/g, '')}`, `DTEND;VALUE=DATE:${addDays(start, 1).replace(/-/g, '')}`,
+      `RRULE:FREQ=DAILY;INTERVAL=${c.cadence}`,
+      `SUMMARY:${icsEsc('Reach out to ' + c.name)}`,
+      `DESCRIPTION:${icsEsc([c.phones?.[0]?.d, c.emails?.[0]?.v].filter(Boolean).join('\n'))}`,
+      'BEGIN:VALARM', 'TRIGGER:PT9H', 'ACTION:DISPLAY', `DESCRIPTION:${icsEsc('Reach out to ' + c.name)}`, 'END:VALARM',
+      'END:VEVENT'].join('\r\n');
+  });
+  download('connections-reminders.ics', ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Connections//EN', 'CALSCALE:GREGORIAN', ...ev, 'END:VCALENDAR'].join('\r\n'), 'text/calendar');
+}
+
+function download(name, text, type) {
+  const url = URL.createObjectURL(new Blob([text], {type}));
+  const a = Object.assign(document.createElement('a'), {href: url, download: name});
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
+/* ---------- notifications / badge ---------- */
+// The badge keeps its last count while locked; it refreshes whenever you unlock.
+function updateBadge(n = KEY ? attentionCount() : null) {
+  if (n == null) return;
+  const tb = document.querySelector('.tabbar button[data-tab="today"]');
+  tb.querySelector('.dot')?.remove();
+  if (n) tb.insertAdjacentHTML('beforeend', `<span class="dot">${n}</span>`);
+  try { if ('setAppBadge' in navigator) (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(() => {}); } catch {}
+}
+async function toggleNotify() {
+  if (!('Notification' in window)) { toast('Notifications not supported here'); return; }
+  if (settings.notify) { settings.notify = false; await save(); renderSettings(); return; }
+  const r = await Notification.requestPermission();
+  settings.notify = r === 'granted';
+  if (!settings.notify) toast('Permission not granted');
+  await save(); renderSettings(); checkNotify(true);
+}
+async function checkNotify(force) {
+  if (!KEY || !settings.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
+  if (!force && settings.lastNotified === today()) return;
+  const due = needsYou(); if (!due.length) return;
+  const names = due.slice(0, 3).map(first).join(', ') + (due.length > 3 ? ` +${due.length - 3}` : '');
+  const title = `${due.length} ${due.length === 1 ? 'person' : 'people'} to reach out to`;
+  try {
+    const reg = await navigator.serviceWorker?.getRegistration();
+    if (reg) reg.showNotification(title, {body: names, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'connections-due'});
+    else new Notification(title, {body: names, icon: 'icon-192.png'});
+    settings.lastNotified = today(); await save();
+  } catch {}
+}
+
+/* ---------- router ---------- */
+function render() {
+  if (!KEY) return;
+  document.querySelectorAll('.tabbar button').forEach(b => b.classList.toggle('on', b.dataset.tab === view.tab || (view.tab === 'detail' && b.dataset.tab === (view.from === 'today' ? 'today' : 'list'))));
+  if (view.tab === 'today') renderToday();
+  else if (view.tab === 'list') renderList();
+  else if (view.tab === 'detail') renderDetail();
+  else if (view.tab === 'add') { view.from = view.from || 'today'; renderEdit({name: '', org: '', title: '', phones: [], emails: [], tags: [], notes: ''}); }
+  else renderSettings();
+  if (view.tab !== 'list') scrollTo(0, 0);
+  updateBadge();
+}
+document.querySelectorAll('.tabbar button').forEach(b => b.onclick = () => { if (!KEY) return; view.from = b.dataset.tab; go(b.dataset.tab); });
+// Roll over at midnight if the app is left open.
+setInterval(() => { if (KEY && !document.hidden && view.tab === 'today' && !$('#scrim').classList.contains('on')) renderToday(); }, 60e3);
+
+if (!window.isSecureContext || !crypto.subtle) {
+  $('#app').innerHTML = '<div class="lock center"><h1>Connections</h1><p class="sub">Open this app over https so encryption is available.</p></div>';
+} else {
+  renderLock();
+}
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
