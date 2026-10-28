@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bulwark">
@@ -30,18 +30,21 @@ h2{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
 .badge{font-family:var(--mono);font-size:11px;color:var(--amber);border:1px solid rgba(240,166,60,.4);border-radius:99px;padding:2px 8px;white-space:nowrap}
 .badge.gray{color:var(--mut);border-color:var(--line)}
 .badge.good{color:var(--good);border-color:rgba(127,184,139,.4)}
-button{font-family:var(--sans);border:none;border-radius:12px;cursor:pointer;font-weight:700}
+button{font-family:var(--sans);border:none;border-radius:12px;cursor:pointer;font-weight:700;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--amber2);outline-offset:2px}
+[tabindex="-1"]:focus{outline:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .btn{background:var(--amber);color:#14171C;padding:13px 16px;font-size:15px;width:100%}
 .btn:disabled{opacity:.35}
 .btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
-.btn.small{width:auto;padding:8px 14px;font-size:13px}
+.btn.small{width:auto;padding:8px 14px;font-size:13px;min-height:44px}
 .btn.danger{background:transparent;color:var(--bad);border:1px solid rgba(224,108,95,.4)}
 /* Breathing banner */
 .breath{background:linear-gradient(90deg,rgba(240,166,60,.12),rgba(240,166,60,.03));border:1px solid rgba(240,166,60,.3);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--amber2);margin:12px 0;display:flex;gap:8px;align-items:center}
 .breath b{color:var(--amber)}
 /* Round pills */
 .rounds{display:flex;gap:8px;margin:14px 0}
-.rpill{flex:1;text-align:center;padding:10px 4px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-weight:700;font-size:13px}
+.rpill{flex:1;min-height:44px;text-align:center;padding:10px 4px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-weight:700;font-size:13px}
 .rpill.on{background:var(--panel2);border-color:var(--amber);color:var(--ink)}
 .rpill.done{color:var(--good);border-color:rgba(127,184,139,.4)}
 .rpill .tag{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;margin-top:2px;color:var(--amber)}
@@ -54,8 +57,9 @@ button{font-family:var(--sans);border:none;border-radius:12px;cursor:pointer;fon
 .step .lab{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
 .step .val{font-family:var(--mono);font-size:22px;font-weight:700;margin:2px 0}
 .stepbtns{display:flex;justify-content:center;gap:6px}
-.stepbtns button{background:var(--panel);border:1px solid var(--line);color:var(--ink);width:38px;height:32px;border-radius:9px;font-size:17px}
-.logbtn{background:var(--amber);color:#14171C;border-radius:12px;padding:0 18px;font-size:14px;min-width:74px}
+.stepbtns button{background:var(--panel);border:1px solid var(--line);color:var(--ink);width:44px;height:44px;border-radius:9px;font-size:17px}
+.logbtn{background:var(--amber);color:#14171C;border-radius:12px;padding:0 18px;font-size:14px;min-width:74px;min-height:44px}
+@media(max-width:369px){.logrow{flex-wrap:wrap}.logbtn{flex-basis:100%;min-height:48px}} /* 44px steppers + Log don't fit side by side on 320px phones */
 .logbtn.done{background:var(--panel2);color:var(--good);border:1px solid rgba(127,184,139,.4)}
 .fail{border-color:var(--amber)!important;box-shadow:0 0 0 1px rgba(240,166,60,.25)}
 .failtag{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.12em}
@@ -103,18 +107,18 @@ textarea{width:100%;background:var(--panel2);color:var(--ink);border:1px solid v
 </style>
 </head>
 <body>
-<div class="wrap" id="app"></div>
+<main class="wrap" id="app"></main>
 
-<div class="timer" id="timer">
+<div class="timer" id="timer" role="timer" aria-label="Rest timer">
   <div><div style="font-size:10px;letter-spacing:.12em;color:var(--mut)">REST</div><div class="t" id="tval">1:15</div></div>
-  <button class="btn small ghost" onclick="skipRest()">Skip</button>
+  <button class="btn small ghost" onclick="skipRest()" aria-label="Skip rest">Skip</button>
 </div>
 
-<nav id="nav">
-  <button data-v="train" onclick="go('train')"><span class="ic">⬤</span>Train</button>
-  <button data-v="history" onclick="go('history')"><span class="ic">▲</span>History</button>
-  <button data-v="info" onclick="go('info')"><span class="ic">✚</span>Info</button>
-  <button data-v="setup" onclick="go('setup')"><span class="ic">⚙</span>Setup</button>
+<nav id="nav" aria-label="Main">
+  <button data-v="train" onclick="go('train')"><span class="ic" aria-hidden="true">⬤</span>Train</button>
+  <button data-v="history" onclick="go('history')"><span class="ic" aria-hidden="true">▲</span>History</button>
+  <button data-v="info" onclick="go('info')"><span class="ic" aria-hidden="true">✚</span>Info</button>
+  <button data-v="setup" onclick="go('setup')"><span class="ic" aria-hidden="true">⚙</span>Setup</button>
 </nav>
 
 <script>
@@ -272,9 +276,13 @@ function defaultsFor(exId,setIdx){
 function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
 
 /* ============ NAV ============ */
-function go(v){ view=v; render(); }
+function go(v){
+  const changed=view!==v; view=v; render();
+  // New screen: start at the top and move focus to its heading for screen readers.
+  if(changed){ window.scrollTo(0,0); const h=$('app').querySelector('h1'); if(h){h.tabIndex=-1;h.focus({preventScroll:true});} }
+}
 function render(){
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+  document.querySelectorAll('nav button').forEach(b=>{ const on=b.dataset.v===view; b.classList.toggle('on',on); on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'); });
   $('nav').style.display = (view==='setup' && !prefs.picks) ? 'none':'flex';
   const r={train:rTrain,history:rHistory,info:rInfo,setup:rSetup}[view];
   $('app').innerHTML=rNotices()+r();
@@ -295,7 +303,7 @@ function rSetup(){
     h+=`<h2>Slot ${s.n} — ${s.title}</h2><p class="sub" style="margin-bottom:10px">${s.desc}</p>`;
     s.options.forEach(o=>{
       const sel = tempPicks[s.id]===o.id;
-      h+=`<div class="card opt ${sel?'sel':''}" id="opt-${o.id}" onclick="pick('${s.id}','${o.id}')">
+      h+=`<div class="card opt ${sel?'sel':''}" id="opt-${o.id}" role="button" tabindex="0" aria-pressed="${sel}" onclick="pick('${s.id}','${o.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();pick('${s.id}','${o.id}')}">
         <div class="row"><div><div class="name" style="font-size:15px;font-weight:800">${o.name}</div>
         <div class="meta" style="font-size:12px;color:var(--mut)">${o.target}</div></div>
         <span class="badge gray">${o.equip}</span></div>
@@ -304,7 +312,7 @@ function rSetup(){
     });
   });
   h+=`<h2>Rest between exercises</h2><div class="card"><div class="row">
-      <span style="font-size:14px">Circuit rest timer</span>
+      <label for="restSel" style="font-size:14px">Circuit rest timer</label>
       <select id="restSel" onchange="prefs.rest=+this.value;store.set('prefs',prefs)">
         ${[60,75,90,120].map(x=>`<option value="${x}" ${prefs.rest===x?'selected':''}>${x}s</option>`).join('')}
       </select></div></div>
@@ -315,7 +323,7 @@ function rSetup(){
 }
 function pick(slot,id){
   tempPicks[slot]=id;
-  SLOTS.find(s=>s.id===slot).options.forEach(o=>$('opt-'+o.id).classList.toggle('sel',o.id===id));
+  SLOTS.find(s=>s.id===slot).options.forEach(o=>{ const el=$('opt-'+o.id); el.classList.toggle('sel',o.id===id); el.setAttribute('aria-pressed',o.id===id); });
   $('saveBtn').disabled = Object.keys(tempPicks).length!==5;
 }
 function savePicks(){ prefs.picks=tempPicks; store.set('prefs',prefs); go('train'); }
@@ -343,13 +351,13 @@ function rTrain(){
   const already = log.some(s=>s.date===today());
   const circ=2*Math.PI*26, off=circ*(1-pct);
   let h=`<div class="row"><div><h1>Today</h1><p class="sub">${fdate(today())} · 3 rounds × 5 moves · ~${Math.round((prefs.rest+45)*15/60)} min</p></div>
-    <svg class="ring" viewBox="0 0 64 64"><circle class="bgc" cx="32" cy="32" r="26"/>
+    <svg class="ring" viewBox="0 0 64 64" role="img" aria-label="${done} of 15 sets logged"><circle class="bgc" cx="32" cy="32" r="26"/>
     <circle class="fgc" cx="32" cy="32" r="26" stroke-dasharray="${circ}" stroke-dashoffset="${off}" transform="rotate(-90 32 32)"/>
     <text x="32" y="37" text-anchor="middle">${done}/15</text></svg></div>`;
-  h+=`<div class="breath">〜 <span><b>Exhale through the effort.</b> Never hold your breath. Gentle pelvic-floor lift before each rep.</span></div>`;
+  h+=`<div class="breath"><span aria-hidden="true">〜</span> <span><b>Exhale through the effort.</b> Never hold your breath. Gentle pelvic-floor lift before each rep.</span></div>`;
   h+=`<div class="rounds">${[0,1,2].map(i=>{
     const d=roundDone(i);
-    return `<button class="rpill ${round===i+1?'on':''} ${d?'done':''}" onclick="round=${i+1};render()">Round ${i+1}${i===2?'<span class="tag">TO FAILURE ✦</span>':''}</button>`;
+    return `<button class="rpill ${round===i+1?'on':''} ${d?'done':''}" aria-pressed="${round===i+1}" onclick="round=${i+1};render()">Round ${i+1}${i===2?'<span class="tag">TO FAILURE ✦</span>':''}</button>`;
   }).join('')}</div>`;
   const rIdx=round-1;
   pickIds().forEach(id=>{
@@ -360,10 +368,10 @@ function rTrain(){
       <div class="row"><div><div class="name">${e.name}</div><div class="meta">${e.target} · ${e.equip}${rIdx===2?' · <span class="failtag">LAST SET — GO TO FAILURE</span>':''}</div></div>
       ${logged?`<span class="badge good">✓ ${d.w>0?d.w+'×':''}${d.r}</span>`:''}</div>
       ${logged?'':`<div class="logrow">
-        ${e.bw && d.w===0 ? `<div class="step"><div class="lab">Load</div><div class="val">BW</div><div class="stepbtns"><button onclick="adj('${id}',${rIdx},'w',5)">＋</button></div></div>`
-        : `<div class="step"><div class="lab">Weight lb</div><div class="val" id="w-${id}">${d.w}</div><div class="stepbtns"><button onclick="adj('${id}',${rIdx},'w',-5)">−</button><button onclick="adj('${id}',${rIdx},'w',5)">＋</button></div></div>`}
-        <div class="step"><div class="lab">${unit(e)}</div><div class="val" id="r-${id}">${d.r}</div><div class="stepbtns"><button onclick="adj('${id}',${rIdx},'r',-1)">−</button><button onclick="adj('${id}',${rIdx},'r',1)">＋</button></div></div>
-        <button class="logbtn" onclick="logSet('${id}',${rIdx})">Log</button>
+        ${e.bw && d.w===0 ? `<div class="step"><div class="lab">Load</div><div class="val" aria-label="Bodyweight">BW</div><div class="stepbtns"><button aria-label="Add 5 lb to ${e.name}" onclick="adj('${id}',${rIdx},'w',5)">＋</button></div></div>`
+        : `<div class="step"><div class="lab">Weight lb</div><div class="val" id="w-${id}" aria-live="polite">${d.w}</div><div class="stepbtns"><button aria-label="5 lb less for ${e.name}" onclick="adj('${id}',${rIdx},'w',-5)">−</button><button aria-label="5 lb more for ${e.name}" onclick="adj('${id}',${rIdx},'w',5)">＋</button></div></div>`}
+        <div class="step"><div class="lab">${unit(e)}</div><div class="val" id="r-${id}" aria-live="polite">${d.r}</div><div class="stepbtns"><button aria-label="Fewer ${unit(e)} for ${e.name}" onclick="adj('${id}',${rIdx},'r',-1)">−</button><button aria-label="More ${unit(e)} for ${e.name}" onclick="adj('${id}',${rIdx},'r',1)">＋</button></div></div>
+        <button class="logbtn" aria-label="Log ${e.name}, round ${round}" onclick="logSet('${id}',${rIdx})">Log</button>
       </div>`}</div>`;
   });
   if(done===15 && !already) h+=`<button class="btn" onclick="finish()">Finish & save session</button>`;
@@ -426,7 +434,7 @@ function rHistory(){
     h+=`<div class="card"><div class="row"><div><div style="font-weight:800">${e.name}</div>
       <div class="sub">${unit(e)} on set 3, last ${vals.length}</div></div>
       <div class="big">${last.w>0?last.w+'×':''}${last.v}</div></div>
-      <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <svg class="spark" aria-hidden="true" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
       <polyline points="${xy.map(p=>p.join(',')).join(' ')}"/>
       <circle cx="${xy[xy.length-1][0]}" cy="${xy[xy.length-1][1]}" r="3.5"/></svg></div>`;
   });
@@ -443,7 +451,7 @@ function rHistory(){
 function rBackup(){
   return `<h2>Backup</h2><div class="card">
     <p class="sub" style="margin-bottom:8px">Copy this JSON somewhere safe, or paste a backup below and import.</p>
-    <textarea id="io">${esc(JSON.stringify({app:'bulwark',v:1,prefs,log}))}</textarea>
+    <label for="io" class="sr">Backup JSON</label><textarea id="io">${esc(JSON.stringify({app:'bulwark',v:1,prefs,log}))}</textarea>
     <div style="height:8px"></div><button class="btn ghost" onclick="importIO()">Import pasted backup</button></div>`;
 }
 function importIO(){
@@ -460,7 +468,7 @@ function importIO(){
 /* ============ INFO ============ */
 function rInfo(){
   return `<h1>The rules</h1>
-  <div class="breath">〜 <span><b>One breathing rule beats every exercise choice:</b> exhale through the hard part of every rep, with a gentle pelvic-floor lift. A held breath is a pressure spike aimed at the exact spot you're protecting.</span></div>
+  <div class="breath"><span aria-hidden="true">〜</span> <span><b>One breathing rule beats every exercise choice:</b> exhale through the hard part of every rep, with a gentle pelvic-floor lift. A held breath is a pressure spike aimed at the exact spot you're protecting.</span></div>
   <h2>Straight talk</h2>
   <div class="card"><p style="font-size:14px;line-height:1.55">No exercise reverses or repairs a hernia — a defect in the wall is mechanical. What training <b>can</b> do: keep symptoms mild, strengthen everything around the canal, keep your body weight down, and make you a better surgical candidate whenever that day comes. Watchful waiting is a legitimate, studied strategy for minimally symptomatic hernias — but most men do eventually cross over to surgery, so think of this as buying quality years, not a cure.</p></div>
   <h2>Lifestyle levers that matter as much as the gym</h2>
