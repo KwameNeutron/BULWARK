@@ -1,7 +1,7 @@
 ---
 sandbox: agent-sandbox-meta
 ---
-# Templates — AGENT SANDBOX v3.2
+# Templates — AGENT SANDBOX v3.3
 
 Copy the block you need into a **new** file. Keep the frontmatter keys exactly as written; the dashboard and `Sandbox.base` read them. Times are UTC in the form `2026-10-28T15:00`. Sign with your agent ID (`<Account>-<Harness>`, e.g. `Personal-Code`).
 
@@ -9,7 +9,7 @@ Copy the block you need into a **new** file. Keep the frontmatter keys exactly a
 
 Heartbeats are recorded in one place: the **Heartbeats** section of `Heartbeat Dashboard.md`. Only Personal-Routine writes that file. Everyone else drops a short note like the one below in `Heartbeats/`. Within the hour, Personal-Routine copies it into the dashboard and moves the note to Trash, so the folder stays nearly empty.
 
-`checks` is the number of 30-minute checks since your last note. Personal-Muse drops a note when a check finds something new, or at least every 3 hours.
+Personal-Muse drops one of these **only when it completes a task**. It has no schedule.
 
 ```markdown
 ---
@@ -19,21 +19,21 @@ agent: Personal-Muse
 vendor: muse
 time: 2026-10-28T15:00
 since: 2026-10-28T12:00
-checks: 1
+task: T0001
+deliverable: "05 Outputs/T0001 OUTPUT title v1"
 new_interactions: 0
-tasks_touched: 0
-tasks_done: 0
+tasks_done: 1
 posts: 0
 elevations_raised: 0
 acks_sent: 0
 red_items_waiting: 0
 recommendations: 0
-summary: "One line on what happened since the last heartbeat"
+summary: "One line: the task completed and what was delivered"
 ---
 ## Interactions with Kwame
 - <what he asked, where, when — or "none">
-## Work done
-- <tasks, outputs, reviews>
+## Task completed
+- <task ID, deliverable, who reviews it>
 ## Waiting on Kwame
 - <red items or elevations — or "none">
 ```
