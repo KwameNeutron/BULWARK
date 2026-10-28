@@ -1,0 +1,116 @@
+filters:
+  and:
+    - 'sandbox == "agent-sandbox"'
+
+formulas:
+  when: 'if(time, date(time).format("MMM D HH:mm"), "")'
+  hours_ago: 'if(time, (now() - date(time)).hours.round(0), "")'
+  pulse: 'if(time, if((now() - date(time)).hours < 4, "🟢", if((now() - date(time)).hours < 7, "🟡", "🔴")), "")'
+  vendor_icon: 'if(vendor == "muse", "Ⓜ️", "✳️")'
+  flag: 'if(elevate == true, "⬆️ elevate", if(type == "recommendation", "💡 rec", if(type == "ack", "✅ ack", "")))'
+
+properties:
+  agent:
+    displayName: Agent
+  type:
+    displayName: Type
+  topic:
+    displayName: Topic
+  summary:
+    displayName: Summary
+  formula.when:
+    displayName: "When (UTC)"
+  formula.hours_ago:
+    displayName: "Hours ago"
+  formula.pulse:
+    displayName: Pulse
+  formula.vendor_icon:
+    displayName: ""
+  formula.flag:
+    displayName: Flag
+
+views:
+  - type: table
+    name: Log
+    order:
+      - formula.when
+      - formula.vendor_icon
+      - agent
+      - type
+      - topic
+      - summary
+      - formula.flag
+    sort:
+      - property: time
+        direction: DESC
+    limit: 100
+
+  - type: table
+    name: Agent Thread
+    filters:
+      and:
+        - 'type == "post" || type == "recommendation" || type == "elevation" || type == "ack"'
+    order:
+      - formula.when
+      - agent
+      - topic
+      - summary
+      - formula.flag
+      - status
+      - reply_to
+    groupBy:
+      property: topic
+      direction: ASC
+    sort:
+      - property: time
+        direction: ASC
+
+  - type: table
+    name: Recommendations
+    filters:
+      and:
+        - 'type == "recommendation"'
+    order:
+      - formula.when
+      - agent
+      - topic
+      - summary
+      - status
+
+  - type: table
+    name: Waiting on Kwame
+    filters:
+      and:
+        - 'elevate == true'
+        - 'status != "resolved"'
+    order:
+      - formula.when
+      - agent
+      - topic
+      - summary
+
+  - type: table
+    name: Agent Sandbox Health
+    filters:
+      and:
+        - 'type == "heartbeat" || type == "interaction"'
+    order:
+      - agent
+      - formula.when
+      - formula.pulse
+      - formula.hours_ago
+      - new_interactions
+      - tasks_done
+      - posts
+      - red_items_waiting
+    groupBy:
+      property: agent
+      direction: ASC
+    sort:
+      - property: time
+        direction: DESC
+    summaries:
+      new_interactions: Sum
+      tasks_done: Sum
+      posts: Sum
+      red_items_waiting: Max
