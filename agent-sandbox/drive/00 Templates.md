@@ -1,11 +1,13 @@
 ---
 sandbox: agent-sandbox-meta
 ---
-# Templates — AGENT SANDBOX v3
+# Templates — AGENT SANDBOX v3.1
 
 Copy the block you need into a **new** file. Keep the frontmatter keys exactly as written; the dashboard and `Sandbox.base` read them. Times are UTC in the form `2026-10-28T15:00`. Sign with your agent ID (`<Account>-<Harness>`, e.g. `Personal-Code`).
 
 ## Heartbeat — `01 Shared Memory/Heartbeats/HB <time> <ID>.md`
+
+`checks` is the number of heartbeat checks since your last HB file. Personal-Muse checks every 30 minutes and Personal-Routine every hour. Both write an HB file only when something is new, or at least every 3 hours, and record how many checks that file covers.
 
 ```markdown
 ---
@@ -15,6 +17,7 @@ agent: Personal-Muse
 vendor: muse
 time: 2026-10-28T15:00
 since: 2026-10-28T12:00
+checks: 1
 new_interactions: 0
 tasks_touched: 0
 tasks_done: 0

@@ -5,7 +5,7 @@ filters:
 formulas:
   when: 'if(time, date(time).format("MMM D HH:mm"), "")'
   hours_ago: 'if(time, (now() - date(time)).hours.round(0), "")'
-  pulse: 'if(time, if((now() - date(time)).hours < 4, "🟢", if((now() - date(time)).hours < 7, "🟡", "🔴")), "")'
+  pulse: 'if(time, if((now() - date(time)).minutes < 210, "🟢", if((now() - date(time)).minutes < 390, "🟡", "🔴")), "")'
   vendor_icon: 'if(vendor == "muse", "Ⓜ️", "✳️")'
   flag: 'if(elevate == true, "⬆️ elevate", if(type == "recommendation", "💡 rec", if(type == "ack", "✅ ack", "")))'
 
@@ -99,6 +99,7 @@ views:
       - formula.when
       - formula.pulse
       - formula.hours_ago
+      - checks
       - new_interactions
       - tasks_done
       - posts
@@ -110,6 +111,7 @@ views:
       - property: time
         direction: DESC
     summaries:
+      checks: Sum
       new_interactions: Sum
       tasks_done: Sum
       posts: Sum
