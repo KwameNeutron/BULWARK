@@ -188,6 +188,7 @@ let active= store.get('active',null);   // {date, entries:{}}
 let view  = prefs.picks ? 'train' : 'setup';
 let round = 1;
 let tempPicks = {};
+let draft = {};   // unsaved stepper values, keyed exId:setIdx — survives re-renders
 let restInt=null, restLeft=0;
 
 /* ============ HELPERS ============ */
@@ -259,8 +260,10 @@ function ensureActive(){
   if(!active || active.date!==today()){ active={date:today(),entries:{}}; store.set('active',active); }
 }
 function setLogged(exId,setIdx){ return active && active.date===today() && active.entries[exId] && active.entries[exId][setIdx]; }
-function roundDone(rIdx){ return Object.values(prefs.picks).every(id=>setLogged(id,rIdx)); }
-function totalLogged(){ let n=0; Object.values(prefs.picks).forEach(id=>{for(let i=0;i<3;i++) if(setLogged(id,i)) n++;}); return n; }
+function roundDone(rIdx){ return pickIds().every(id=>setLogged(id,rIdx)); }
+// Picks in slot order (Object.values follows the order slots were tapped in Setup).
+function pickIds(){ return SLOTS.map(s=>(prefs.picks||{})[s.id]).filter(id=>EX[id]); }
+function totalLogged(){ let n=0; pickIds().forEach(id=>{for(let i=0;i<3;i++) if(setLogged(id,i)) n++;}); return n; }
 
 function rTrain(){
   ensureActive();
@@ -277,17 +280,17 @@ function rTrain(){
     return `<button class="rpill ${round===i+1?'on':''} ${d?'done':''}" onclick="round=${i+1};render()">Round ${i+1}${i===2?'<span class="tag">TO FAILURE ✦</span>':''}</button>`;
   }).join('')}</div>`;
   const rIdx=round-1;
-  Object.values(prefs.picks).forEach(id=>{
+  pickIds().forEach(id=>{
     const e=EX[id], logged=setLogged(id,rIdx);
-    const d = logged ? active.entries[id][rIdx] : defaultsFor(id,rIdx);
+    const d = logged ? active.entries[id][rIdx] : current(id,rIdx);
     const failCls = rIdx===2?'fail':'';
     h+=`<div class="card ex ${failCls}">
       <div class="row"><div><div class="name">${e.name}</div><div class="meta">${e.target} · ${e.equip}${rIdx===2?' · <span class="failtag">LAST SET — GO TO FAILURE</span>':''}</div></div>
       ${logged?`<span class="badge good">✓ ${d.w>0?d.w+'×':''}${d.r}</span>`:''}</div>
       ${logged?'':`<div class="logrow">
-        ${e.bw && d.w===0 ? `<div class="step"><div class="lab">Load</div><div class="val">BW</div><div class="stepbtns"><button onclick="adj('${id}','w',5)">＋</button></div></div>`
-        : `<div class="step"><div class="lab">Weight lb</div><div class="val" id="w-${id}">${d.w}</div><div class="stepbtns"><button onclick="adj('${id}','w',-5)">−</button><button onclick="adj('${id}','w',5)">＋</button></div></div>`}
-        <div class="step"><div class="lab">${unit(e)}</div><div class="val" id="r-${id}">${d.r}</div><div class="stepbtns"><button onclick="adj('${id}','r',-1)">−</button><button onclick="adj('${id}','r',1)">＋</button></div></div>
+        ${e.bw && d.w===0 ? `<div class="step"><div class="lab">Load</div><div class="val">BW</div><div class="stepbtns"><button onclick="adj('${id}',${rIdx},'w',5)">＋</button></div></div>`
+        : `<div class="step"><div class="lab">Weight lb</div><div class="val" id="w-${id}">${d.w}</div><div class="stepbtns"><button onclick="adj('${id}',${rIdx},'w',-5)">−</button><button onclick="adj('${id}',${rIdx},'w',5)">＋</button></div></div>`}
+        <div class="step"><div class="lab">${unit(e)}</div><div class="val" id="r-${id}">${d.r}</div><div class="stepbtns"><button onclick="adj('${id}',${rIdx},'r',-1)">−</button><button onclick="adj('${id}',${rIdx},'r',1)">＋</button></div></div>
         <button class="logbtn" onclick="logSet('${id}',${rIdx})">Log</button>
       </div>`}</div>`;
   });
@@ -295,27 +298,26 @@ function rTrain(){
   else if(already) h+=`<div class="card" style="text-align:center;color:var(--good);font-weight:700">Session saved ✓</div>`;
   return h;
 }
-function adj(id,f,d){
-  const el=$((f==='w'?'w-':'r-')+id); if(!el) { // BW → adding weight converts to numeric
-    if(f==='w'){ const e=EX[id]; e._tmpW=(e._tmpW||0)+5; render(); } return;
-  }
-  let v=parseInt(el.textContent)+d; if(v<0)v=0; el.textContent=v;
+function current(id,rIdx){ return draft[id+':'+rIdx] || defaultsFor(id,rIdx); }
+function adj(id,rIdx,f,d){
+  const k=id+':'+rIdx, v={...current(id,rIdx)}, wasBW=EX[id].bw && v.w===0;
+  v[f]=Math.max(0,v[f]+d); draft[k]=v;
+  const el=$((f==='w'?'w-':'r-')+id);
+  // Bodyweight moves swap between the "BW" and numeric weight steppers, so re-render.
+  if(!el || (EX[id].bw && (v.w===0)!==wasBW)) render(); else el.textContent=v[f];
 }
 function logSet(id,rIdx){
   ensureActive();
-  const e=EX[id];
-  const wEl=$('w-'+id), rEl=$('r-'+id);
-  const w=wEl?parseInt(wEl.textContent):(e._tmpW||0);
-  const r=rEl?parseInt(rEl.textContent):0;
+  const {w,r}=current(id,rIdx);
   if(!active.entries[id]) active.entries[id]=[];
-  active.entries[id][rIdx]={w,r};
+  active.entries[id][rIdx]={w,r}; delete draft[id+':'+rIdx];
   store.set('active',active); vibrate(30);
   startRest(); render();
 }
 function finish(){
   log=log.filter(s=>s.date!==today());
   log.push({date:active.date,entries:active.entries});
-  store.set('log',log); active=null; store.set('active',null);
+  store.set('log',log); active=null; store.set('active',null); draft={};
   round=1; vibrate([40,60,40]); render();
 }
 /* rest timer */
@@ -332,7 +334,7 @@ function rHistory(){
   if(!log.length) return `<h1>History</h1><p class="sub">No sessions yet. Your saved circuits will land here, newest first.</p>`;
   let h=`<h1>History</h1><p class="sub">${log.length} session${log.length>1?'s':''} · data lives on this phone only</p>`;
   h+=`<h2>Progress — failure set</h2>`;
-  Object.values(prefs.picks||{}).forEach(id=>{
+  pickIds().forEach(id=>{
     const e=EX[id];
     const pts=log.filter(s=>s.entries[id]).map(s=>{const sets=s.entries[id];const f=sets[2]||sets[sets.length-1];return {d:s.date,v:f.r,w:f.w};});
     if(!pts.length) return;
