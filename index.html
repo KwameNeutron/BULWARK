@@ -254,7 +254,13 @@ function pick(slot,id){
   $('saveBtn').disabled = Object.keys(tempPicks).length!==5;
 }
 function savePicks(){ prefs.picks=tempPicks; store.set('prefs',prefs); go('train'); }
-function wipe(){ if(confirm('Erase all workouts and settings?')){localStorage.clear();location.reload();} }
+// Only remove Bulwark's own keys: on GitHub Pages every project under
+// <user>.github.io shares one origin, so localStorage.clear() wiped other apps too.
+function wipe(){
+  if(!confirm('Erase all workouts and settings?')) return;
+  try{ Object.keys(localStorage).filter(k=>k.startsWith('bw.')).forEach(k=>localStorage.removeItem(k)); }catch(e){}
+  location.reload();
+}
 
 /* ============ TRAIN ============ */
 function ensureActive(){
