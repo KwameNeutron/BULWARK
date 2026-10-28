@@ -1,0 +1,18 @@
+{
+  "pd-us-unrenewed": {
+    "label": "US public domain (not renewed)",
+    "policy": "US works published 1929–1963 needed a copyright renewal; Chronicling America only includes titles cleared on that basis. Quote freely, but keep excerpts short anyway because wire and syndicated items can carry separate rights. Link to LOC page images; do not re-host until checked item by item."
+  },
+  "in-copyright-quote": {
+    "label": "In copyright: short quotation only",
+    "policy": "Quote 1–2 sentences for commentary, with full attribution and a link to the licensed archive. No page images. Dutch citation right (Auteurswet art. 15a) for Delpher items; US fair use (17 U.S.C. § 107) for US items."
+  },
+  "un-document": {
+    "label": "UN official document",
+    "policy": "Freely quotable with attribution."
+  },
+  "us-gov": {
+    "label": "US government work",
+    "policy": "Public domain (17 U.S.C. § 105)."
+  }
+}

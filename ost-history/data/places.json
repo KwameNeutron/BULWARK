@@ -1,0 +1,9 @@
+[
+  { "id": "pl-unhq", "name": "UN Headquarters, New York", "lat": 40.7489, "lon": -73.968 },
+  { "id": "pl-geneva", "name": "Palais des Nations, Geneva", "lat": 46.2267, "lon": 6.1403 },
+  { "id": "pl-washington", "name": "Washington, D.C. (White House)", "lat": 38.8977, "lon": -77.0365 },
+  { "id": "pl-london", "name": "London", "lat": 51.5074, "lon": -0.1278 },
+  { "id": "pl-moscow", "name": "Moscow", "lat": 55.7558, "lon": 37.6173 },
+  { "id": "pl-austin", "name": "Austin / LBJ Ranch, Texas", "lat": 30.2672, "lon": -97.7431 },
+  { "id": "pl-baikonur", "name": "Tyuratam (Baikonur), Kazakh SSR", "lat": 45.92, "lon": 63.34 }
+]
