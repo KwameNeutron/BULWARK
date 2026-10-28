@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; form-action 'none'; base-uri 'none'">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Connections">
+<meta name="theme-color" content="#14171C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Connections</title>
+<style>
+:root{
+  --bg:#14171C; --panel:#1C2129; --panel2:#232A34; --ink:#E9EDF2; --mut:#8B96A5;
+  --amber:#F0A63C; --amber2:#FFC46B; --good:#7FB88B; --bad:#E06C5F; --line:#2C3441;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);height:100%}
+body{padding-bottom:env(safe-area-inset-bottom)}
+.wrap{max-width:560px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px 96px}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:22px 0 8px}
+.sub{color:var(--mut);font-size:13px;margin-top:2px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+button{font-family:var(--sans);border:none;border-radius:12px;cursor:pointer;font-weight:700;color:inherit}
+.btn{background:var(--amber);color:#14171C;padding:13px 16px;font-size:15px;width:100%}
+.btn:disabled{opacity:.35}
+.btn.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.small{width:auto;padding:8px 14px;font-size:13px}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid rgba(224,108,95,.4)}
+.icon{background:var(--panel2);border:1px solid var(--line);width:38px;height:38px;border-radius:11px;font-size:18px;display:inline-flex;align-items:center;justify-content:center}
+input,textarea,select{font-family:var(--sans);font-size:16px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 12px;width:100%}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--amber)}
+label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px;font-weight:600}
+.search{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 8px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;font-size:12px;padding:6px 11px;border-radius:99px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-weight:600}
+.chip.on{color:var(--amber);border-color:rgba(240,166,60,.6);background:rgba(240,166,60,.08)}
+.letter{font-family:var(--mono);font-size:12px;color:var(--amber);padding:14px 4px 4px}
+.item{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.av{flex:0 0 40px;height:40px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:var(--amber2)}
+.av.big{width:76px;height:76px;flex-basis:76px;font-size:26px;margin:0 auto}
+.it-main{min-width:0;flex:1}
+.it-name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it-sub{color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.badge{font-family:var(--mono);font-size:10px;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:2px 7px;white-space:nowrap}
+.actions{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.act{flex:1;max-width:90px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 4px;font-size:12px;color:var(--amber2);text-align:center;text-decoration:none;font-weight:600}
+.act span{display:block;font-size:20px;margin-bottom:3px}
+.act.off{opacity:.3;pointer-events:none}
+.field{padding:11px 0;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:none}
+.field .k{font-size:12px;color:var(--mut)}
+.field a,.field .v{color:var(--ink);font-size:15px;text-decoration:none;word-break:break-word;display:block;margin-top:2px}
+.field a{color:var(--amber2)}
+.center{text-align:center}
+.lock{min-height:80vh;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+.ok{color:var(--good);font-size:13px}
+.note{font-size:13px;color:var(--mut);line-height:1.5}
+.tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(20,23,28,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:10}
+.tabbar button{background:none;color:var(--mut);font-size:11px;font-weight:600;padding:4px 22px}
+.tabbar button span{display:block;font-size:20px}
+.tabbar button.on{color:var(--amber)}
+.hidden{display:none!important}
+.count{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.more{display:block;margin:16px auto;width:auto}
+.multi{display:flex;gap:6px;margin-top:6px}
+.multi input{flex:1}
+.multi select{flex:0 0 96px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<nav class="tabbar hidden" id="tabbar">
+  <button data-tab="list" class="on"><span>☰</span>Contacts</button>
+  <button data-tab="add"><span>＋</span>Add</button>
+  <button data-tab="settings"><span>⚙</span>Settings</button>
+</nav>
+<input type="file" id="filepick" accept=".json,application/json" class="hidden">
+<script>
+'use strict';
+/* Connections: a private, on-device contact book.
+   All contacts live in this browser's IndexedDB, encrypted with AES-GCM using a key
+   derived from your passcode (PBKDF2-SHA256). Nothing is ever sent over the network. */
+
+const DB_NAME = 'connections', STORE = 'kv', KDF_ITERS = 310000, AUTO_LOCK_MS = 5 * 60 * 1000;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const enc = new TextEncoder(), dec = new TextDecoder();
+const b64 = buf => { const u = new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+/* ---------- storage ---------- */
+function idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function kvGet(k) {
+  const db = await idb();
+  return new Promise((res, rej) => { const q = db.transaction(STORE).objectStore(STORE).get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+}
+async function kvSet(k, v) {
+  const db = await idb();
+  return new Promise((res, rej) => { const t = db.transaction(STORE, 'readwrite'); t.objectStore(STORE).put(v, k); t.oncomplete = res; t.onerror = () => rej(t.error); });
+}
+async function wipeDb() {
+  (await idb()).close();
+  await new Promise(res => { const r = indexedDB.deleteDatabase(DB_NAME); r.onsuccess = r.onerror = r.onblocked = res; });
+}
+
+/* ---------- crypto ---------- */
+async function deriveKey(pass, salt) {
+  const base = await crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name: 'PBKDF2', salt, iterations: KDF_ITERS, hash: 'SHA-256'}, base, {name: 'AES-GCM', length: 256}, false, ['encrypt', 'decrypt']);
+}
+async function seal(key, obj) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, key, enc.encode(JSON.stringify(obj, (k, v) => k === '_h' ? undefined : v)));
+  return {iv: b64(iv), ct: b64(ct)};
+}
+async function open_(key, box) {
+  const pt = await crypto.subtle.decrypt({name: 'AES-GCM', iv: unb64(box.iv)}, key, unb64(box.ct));
+  return JSON.parse(dec.decode(pt));
+}
+
+/* ---------- state ---------- */
+let KEY = null, META = null, contacts = [], view = {tab: 'list', q: '', filter: 'all', limit: 200, id: null, edit: false};
+let lockTimer = null;
+
+async function save() { await kvSet('data', await seal(KEY, {contacts})); }
+
+function lock() {
+  KEY = null; contacts = [];
+  $('#tabbar').classList.add('hidden');
+  renderLock();
+}
+function bumpLock() { clearTimeout(lockTimer); if (KEY) lockTimer = setTimeout(lock, AUTO_LOCK_MS); }
+['click', 'keydown', 'touchstart'].forEach(e => document.addEventListener(e, bumpLock, {passive: true}));
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && KEY) { view.hiddenAt = Date.now(); }
+  else if (!document.hidden && KEY && view.hiddenAt && Date.now() - view.hiddenAt > 60000) lock();
+});
+
+/* ---------- lock / setup ---------- */
+async function renderLock() {
+  META = await kvGet('meta');
+  const first = !META;
+  $('#app').innerHTML = `
+    <div class="lock center">
+      <div class="av big">◎</div>
+      <h1>Connections</h1>
+      <p class="sub">${first ? 'Private and on this phone only. Choose a passcode to encrypt your contacts.' : 'Locked. Enter your passcode.'}</p>
+      <input id="pw" type="password" autocomplete="${first ? 'new-password' : 'current-password'}" placeholder="Passcode" inputmode="text">
+      ${first ? '<input id="pw2" type="password" autocomplete="new-password" placeholder="Confirm passcode">' : ''}
+      <div class="err" id="err"></div>
+      <button class="btn" id="go">${first ? 'Create' : 'Unlock'}</button>
+      ${first ? '<p class="note">There is no recovery. If you forget the passcode, you erase and re-import.</p>' : '<button class="btn ghost small" id="forgot" style="margin:8px auto 0">Forgot passcode</button>'}
+    </div>`;
+  const go = async () => {
+    const pw = $('#pw').value, err = $('#err');
+    if (pw.length < 6) { err.textContent = 'Use at least 6 characters.'; return; }
+    $('#go').disabled = true; err.textContent = '';
+    try {
+      if (first) {
+        if (pw !== $('#pw2').value) throw new Error('Passcodes do not match.');
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        KEY = await deriveKey(pw, salt);
+        META = {v: 1, salt: b64(salt), check: await seal(KEY, 'ok')};
+        await kvSet('meta', META);
+        contacts = []; await save();
+      } else {
+        const k = await deriveKey(pw, unb64(META.salt));
+        try { await open_(k, META.check); } catch { throw new Error('Wrong passcode.'); }
+        KEY = k;
+        const box = await kvGet('data');
+        contacts = box ? (await open_(KEY, box)).contacts : [];
+      }
+      $('#tabbar').classList.remove('hidden');
+      bumpLock();
+      view.tab = contacts.length ? 'list' : 'settings';
+      render();
+    } catch (e) { err.textContent = e.message; $('#go').disabled = false; }
+  };
+  $('#go').onclick = go;
+  $('#app').onkeydown = e => { if (e.key === 'Enter') go(); };
+  const f = $('#forgot');
+  if (f) f.onclick = async () => {
+    if (confirm('Erase everything in Connections on this phone? You can re-import your file afterwards.')) { await wipeDb(); renderLock(); }
+  };
+  setTimeout(() => $('#pw').focus(), 50);
+}
+
+/* ---------- list ---------- */
+const initials = n => (n || '?').replace(/[^\p{L}\p{N} ]/gu, ' ').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '#';
+const subline = c => [c.title, c.org].filter(Boolean).join(' · ') || (c.emails?.[0]?.v ?? '') || (c.phones?.[0]?.d ?? '');
+const hay = c => (c._h ??= [c.name, c.org, c.title, c.notes, ...(c.tags || []), ...(c.emails || []).map(e => e.v), ...(c.phones || []).map(p => p.d + ' ' + p.v.replace(/\D/g, ''))].join(' ').toLowerCase());
+const FILTERS = [
+  ['all', 'All', c => !c.hidden],
+  ['fav', '★ Favorites', c => c.fav],
+  ['phone', 'Has phone', c => !c.hidden && c.phones?.length],
+  ['iphone', 'iPhone', c => !c.hidden && c.tags?.includes('iPhone')],
+  ['li', 'LinkedIn', c => !c.hidden && (c.linkedin || c.tags?.includes('LinkedIn connection'))],
+  ['named', 'Needs a name', c => !c.hidden && c.nameless],
+  ['hidden', 'Hidden', c => c.hidden],
+];
+
+function renderList() {
+  const f = FILTERS.find(x => x[0] === view.filter)[2];
+  const terms = view.q.toLowerCase().split(/\s+/).filter(Boolean);
+  const res = contacts.filter(c => f(c) && terms.every(t => hay(c).includes(t)));
+  const shown = res.slice(0, view.limit);
+  let html = '', last = '';
+  for (const c of shown) {
+    const L = c.nameless ? '#' : ((c.name[0] || '#').toUpperCase().match(/\p{L}/u) ? c.name[0].toUpperCase() : '#');
+    if (L !== last && !terms.length) { html += `<div class="letter">${esc(L)}</div>`; last = L; }
+    html += `<div class="item" data-id="${c.id}"><div class="av">${esc(initials(c.name))}</div>
+      <div class="it-main"><div class="it-name">${c.fav ? '★ ' : ''}${esc(c.name)}</div><div class="it-sub">${esc(subline(c))}</div></div></div>`;
+  }
+  $('#app').innerHTML = `
+    <div class="row"><div><h1>Connections</h1><div class="sub">${contacts.filter(c => !c.hidden).length.toLocaleString()} contacts · private to this phone</div></div>
+      <button class="icon" id="lockbtn" title="Lock">🔒</button></div>
+    <div class="search">
+      <input id="q" type="search" placeholder="Search name, company, email, phone, notes" value="${esc(view.q)}" autocomplete="off">
+      <div class="chips">${FILTERS.map(([k, l]) => `<button class="chip ${view.filter === k ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div>
+    </div>
+    <div class="count">${res.length.toLocaleString()} result${res.length === 1 ? '' : 's'}</div>
+    <div id="list">${html || '<p class="note" style="padding:20px 0">Nothing here.</p>'}</div>
+    ${res.length > shown.length ? `<button class="btn ghost small more" id="more">Show more (${(res.length - shown.length).toLocaleString()} left)</button>` : ''}`;
+  const q = $('#q');
+  q.oninput = () => { view.q = q.value; view.limit = 200; const pos = q.selectionStart; renderList(); const n = $('#q'); n.focus(); n.setSelectionRange(pos, pos); };
+  document.querySelectorAll('.chip').forEach(b => b.onclick = () => { view.filter = b.dataset.f; view.limit = 200; renderList(); });
+  document.querySelectorAll('.item').forEach(el => el.onclick = () => { view.id = el.dataset.id; view.tab = 'detail'; view.edit = false; view.scroll = scrollY; render(); });
+  $('#lockbtn').onclick = lock;
+  const m = $('#more'); if (m) m.onclick = () => { view.limit += 400; renderList(); };
+}
+
+/* ---------- detail ---------- */
+const telHref = p => 'tel:' + p.v;
+function renderDetail() {
+  const c = contacts.find(x => x.id === view.id);
+  if (!c) { view.tab = 'list'; return render(); }
+  if (view.edit) return renderEdit(c);
+  const p0 = c.phones?.[0], e0 = c.emails?.[0];
+  const fields = [
+    ...(c.phones || []).map(p => `<div class="field"><div class="k">${esc(p.l || 'phone')}</div><a href="${esc(telHref(p))}">${esc(p.d)}</a></div>`),
+    ...(c.emails || []).map(e => `<div class="field"><div class="k">${esc(e.l || 'email')}</div><a href="mailto:${esc(e.v)}">${esc(e.v)}</a></div>`),
+    c.linkedin ? `<div class="field"><div class="k">LinkedIn</div><a href="${esc(c.linkedin)}" target="_blank" rel="noopener noreferrer">${esc(c.linkedin.replace(/^https:\/\/www\./, ''))}</a></div>` : '',
+    c.notes ? `<div class="field"><div class="k">Notes</div><div class="v" style="white-space:pre-wrap">${esc(c.notes)}</div></div>` : '',
+    c.tags?.length ? `<div class="field"><div class="k">Tags</div><div class="v">${c.tags.map(t => `<span class="badge">${esc(t)}</span>`).join(' ')}</div></div>` : '',
+    c.sources?.length ? `<div class="field"><div class="k">From</div><div class="v note">${esc(c.sources.join(' · '))}</div></div>` : '',
+  ].join('');
+  $('#app').innerHTML = `
+    <div class="row"><button class="btn ghost small" id="back">‹ Back</button>
+      <div style="display:flex;gap:8px"><button class="icon" id="fav">${c.fav ? '★' : '☆'}</button><button class="btn ghost small" id="edit">Edit</button></div></div>
+    <div class="center" style="margin-top:16px"><div class="av big">${esc(initials(c.name))}</div>
+      <h1 style="margin-top:10px">${esc(c.name)}</h1><div class="sub">${esc([c.title, c.org].filter(Boolean).join(' · '))}</div>
+      ${c.hidden ? '<div class="sub" style="color:var(--amber)">Hidden from the main list</div>' : ''}</div>
+    <div class="actions">
+      <a class="act ${p0 ? '' : 'off'}" href="${p0 ? esc(telHref(p0)) : '#'}"><span>✆</span>call</a>
+      <a class="act ${p0 ? '' : 'off'}" href="${p0 ? 'sms:' + esc(p0.v) : '#'}"><span>✉︎</span>text</a>
+      <a class="act ${e0 ? '' : 'off'}" href="${e0 ? 'mailto:' + esc(e0.v) : '#'}"><span>@</span>email</a>
+      <a class="act ${c.linkedin ? '' : 'off'}" href="${c.linkedin ? esc(c.linkedin) : '#'}" target="_blank" rel="noopener noreferrer"><span>in</span>LinkedIn</a>
+    </div>
+    <div class="card">${fields || '<p class="note">No details yet. Tap Edit to add some.</p>'}</div>
+    <button class="btn ghost" id="vcf" style="margin-top:6px">Add to iPhone Contacts</button>
+    <p class="note" style="margin-top:6px">Opens a contact card that iOS lets you save to the Contacts app.</p>`;
+  $('#back').onclick = () => { view.tab = 'list'; render(); requestAnimationFrame(() => scrollTo(0, view.scroll || 0)); };
+  $('#edit').onclick = () => { view.edit = true; render(); };
+  $('#fav').onclick = async () => { c.fav = !c.fav; await save(); renderDetail(); };
+  $('#vcf').onclick = () => download(`${(c.name || 'contact').replace(/[^\w .-]/g, '')}.vcf`, vcard([c]), 'text/vcard');
+}
+
+function renderEdit(c) {
+  const isNew = !c.id;
+  const rowsOf = (list, kind) => (list.length ? list : [{v: '', l: ''}]).map(x => `
+    <div class="multi" data-kind="${kind}"><input value="${esc(kind === 'phone' ? (x.d || x.v) : x.v)}" placeholder="${kind === 'phone' ? '(202) 555-0100' : 'name@example.com'}" type="${kind === 'phone' ? 'tel' : 'email'}">
+    <select>${(kind === 'phone' ? ['mobile', 'home', 'work', 'main', 'other'] : ['personal', 'work', 'other']).map(o => `<option ${x.l === o ? 'selected' : ''}>${o}</option>`).join('')}</select></div>`).join('');
+  $('#app').innerHTML = `
+    <div class="row"><button class="btn ghost small" id="cancel">Cancel</button><h1 style="font-size:17px">${isNew ? 'New contact' : 'Edit'}</h1><button class="btn small" id="save">Save</button></div>
+    <label>Name</label><input id="f-name" value="${esc(c.nameless ? '' : c.name)}" placeholder="${esc(c.nameless ? c.name : 'Full name')}">
+    <label>Organization</label><input id="f-org" value="${esc(c.org)}">
+    <label>Title</label><input id="f-title" value="${esc(c.title)}">
+    <label>Phones <button class="badge" id="addp" type="button">+ add</button></label><div id="phones">${rowsOf(c.phones || [], 'phone')}</div>
+    <label>Emails <button class="badge" id="adde" type="button">+ add</button></label><div id="emails">${rowsOf(c.emails || [], 'email')}</div>
+    <label>LinkedIn URL</label><input id="f-li" value="${esc(c.linkedin || '')}" type="url" placeholder="https://www.linkedin.com/in/...">
+    <label>Tags (comma separated)</label><input id="f-tags" value="${esc((c.tags || []).join(', '))}">
+    <label>Notes</label><textarea id="f-notes" placeholder="How you know them, last talked, follow-ups">${esc(c.notes)}</textarea>
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="f-hidden" style="width:auto" ${c.hidden ? 'checked' : ''}> Hide from the main list</label>
+    ${isNew ? '' : '<button class="btn danger" id="del" style="margin-top:24px">Delete contact</button>'}`;
+  const addRow = (box, kind) => { $(box).insertAdjacentHTML('beforeend', rowsOf([], kind)); };
+  $('#addp').onclick = () => addRow('#phones', 'phone');
+  $('#adde').onclick = () => addRow('#emails', 'email');
+  $('#cancel').onclick = () => { view.edit = false; view.tab = isNew ? 'list' : 'detail'; render(); };
+  $('#save').onclick = async () => {
+    const name = $('#f-name').value.trim();
+    const phones = [...document.querySelectorAll('[data-kind=phone]')].map(r => normPhone(r.querySelector('input').value, r.querySelector('select').value)).filter(Boolean);
+    const emails = [...document.querySelectorAll('[data-kind=email]')].map(r => ({v: r.querySelector('input').value.trim().toLowerCase(), l: r.querySelector('select').value})).filter(e => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(e.v));
+    if (!name && !phones.length && !emails.length) { alert('Add a name, phone or email.'); return; }
+    Object.assign(c, {
+      name: name || (c.nameless ? c.name : '') || emails[0]?.v || phones[0]?.d, nameless: !name && (c.nameless || isNew),
+      org: $('#f-org').value.trim(), title: $('#f-title').value.trim(), phones, emails,
+      linkedin: $('#f-li').value.trim() || null, notes: $('#f-notes').value,
+      tags: $('#f-tags').value.split(',').map(t => t.trim()).filter(Boolean), hidden: $('#f-hidden').checked,
+      updated: new Date().toISOString(),
+    });
+    if (!c.nameless) delete c.nameless;
+    delete c._h;
+    if (isNew) { c.id = 'k_' + crypto.getRandomValues(new Uint32Array(2)).join('').slice(0, 12); c.sources = ['Added in Connections']; contacts.push(c); }
+    sortContacts(); await save();
+    view.id = c.id; view.edit = false; view.tab = 'detail'; render();
+  };
+  const d = $('#del');
+  if (d) d.onclick = async () => {
+    if (!confirm(`Delete ${c.name}?`)) return;
+    contacts = contacts.filter(x => x !== c); await save(); view.tab = 'list'; view.edit = false; render();
+  };
+}
+
+function normPhone(raw, label) {
+  const s = raw.trim(); if (!s) return null;
+  const d = s.replace(/\D/g, '');
+  let v;
+  if (s.startsWith('+')) v = '+' + d;
+  else if (d.length === 10) v = '+1' + d;
+  else if (d.length === 11 && d[0] === '1') v = '+' + d;
+  else v = d;
+  const disp = /^\+1\d{10}$/.test(v) ? `(${v.slice(2, 5)}) ${v.slice(5, 8)}-${v.slice(8)}` : v;
+  return {v, d: disp, l: label};
+}
+function sortContacts() {
+  contacts.sort((a, b) => (!!a.hidden - !!b.hidden) || (!!a.nameless - !!b.nameless) || a.name.localeCompare(b.name, undefined, {sensitivity: 'base'}));
+}
+
+/* ---------- settings / import / export ---------- */
+function renderSettings(msg) {
+  const hiddenN = contacts.filter(c => c.hidden).length;
+  $('#app').innerHTML = `
+    <h1>Settings</h1>
+    <div class="sub">${contacts.length.toLocaleString()} contacts stored, ${hiddenN.toLocaleString()} hidden. Encrypted on this phone only.</div>
+    ${msg ? `<p class="ok" style="margin-top:10px">${esc(msg)}</p>` : ''}
+    <h2>Import</h2>
+    <div class="card">
+      <p class="note">Pick <b>connections-import.json</b> (or a Connections backup) from the Files app. Contacts are matched by ID, email, phone or LinkedIn, so importing twice will not create duplicates. Your notes and edits are kept.</p>
+      <button class="btn" id="imp" style="margin-top:12px">Import from Files</button>
+    </div>
+    <h2>Backup</h2>
+    <div class="card">
+      <p class="note">An encrypted backup can only be opened with your passcode. Save it to Files or iCloud Drive.</p>
+      <button class="btn ghost" id="bk" style="margin-top:12px">Save encrypted backup</button>
+      <button class="btn ghost" id="vcfall" style="margin-top:8px">Export all visible as vCard (.vcf)</button>
+    </div>
+    <h2>Security</h2>
+    <div class="card">
+      <p class="note">Locks after 5 minutes idle or 1 minute in the background. Nothing in this app talks to the internet; contacts never leave this phone unless you export them.</p>
+      <button class="btn ghost" id="lk" style="margin-top:12px">Lock now</button>
+      <button class="btn danger" id="wipe" style="margin-top:8px">Erase all data on this phone</button>
+    </div>`;
+  $('#imp').onclick = () => $('#filepick').click();
+  $('#bk').onclick = async () => download(`connections-backup-${new Date().toISOString().slice(0, 10)}.json`,
+    JSON.stringify({format: 'connections/encrypted-v1', salt: META.salt, iters: KDF_ITERS, box: await seal(KEY, {contacts})}), 'application/json');
+  $('#vcfall').onclick = () => download('connections.vcf', vcard(contacts.filter(c => !c.hidden)), 'text/vcard');
+  $('#lk').onclick = lock;
+  $('#wipe').onclick = async () => {
+    if (!confirm('Erase every contact stored in Connections on this phone?')) return;
+    if (prompt('Type ERASE to confirm') !== 'ERASE') return;
+    await wipeDb(); KEY = null; contacts = []; $('#tabbar').classList.add('hidden'); renderLock();
+  };
+}
+
+$('#filepick').onchange = async e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file) return;
+  try {
+    let data = JSON.parse(await file.text());
+    if (data.format === 'connections/encrypted-v1') {
+      const pw = prompt('Passcode used for this backup');
+      if (pw == null) return;
+      const k = await deriveKey(pw, unb64(data.salt));
+      try { data = await open_(k, data.box); } catch { throw new Error('That passcode does not open this backup.'); }
+    }
+    if (!Array.isArray(data.contacts)) throw new Error('This file has no contacts in it.');
+    const r = mergeIn(data.contacts);
+    sortContacts(); await save();
+    renderSettings(`Imported: ${r.added.toLocaleString()} new, ${r.updated.toLocaleString()} merged into existing.`);
+  } catch (err) { alert('Import failed: ' + err.message); }
+};
+
+function mergeIn(incoming) {
+  const idx = new Map();
+  const keys = c => [c.id && 'i:' + c.id, ...(c.rolodexIds || []).map(x => 'r:' + x), ...(c.emails || []).map(e => 'e:' + e.v), ...(c.phones || []).map(p => 'p:' + p.v), c.linkedin && 'l:' + c.linkedin.toLowerCase()].filter(Boolean);
+  contacts.forEach(c => keys(c).forEach(k => idx.set(k, c)));
+  let added = 0, updated = 0;
+  for (const n of incoming) {
+    if (!n || typeof n.name !== 'string') continue;
+    const hit = keys(n).map(k => idx.get(k)).find(Boolean);
+    if (!hit) {
+      const c = {...n, id: n.id || 'k_' + crypto.getRandomValues(new Uint32Array(2)).join('').slice(0, 12)};
+      delete c._h; contacts.push(c); keys(c).forEach(k => idx.set(k, c)); added++; continue;
+    }
+    // keep the user's edits; fill gaps and union lists
+    for (const f of ['org', 'title', 'linkedin']) if (!hit[f] && n[f]) hit[f] = n[f];
+    if (hit.nameless && n.name && !n.nameless) { hit.name = n.name; delete hit.nameless; }
+    const uni = (a = [], b = []) => { const s = new Set(a.map(x => x.v)); return [...a, ...b.filter(x => !s.has(x.v))]; };
+    hit.emails = uni(hit.emails, n.emails); hit.phones = uni(hit.phones, n.phones);
+    hit.tags = [...new Set([...(hit.tags || []), ...(n.tags || [])])];
+    hit.sources = [...new Set([...(hit.sources || []), ...(n.sources || [])])];
+    hit.rolodexIds = [...new Set([...(hit.rolodexIds || []), ...(n.rolodexIds || [])])];
+    if (n.notes && !(hit.notes || '').includes(n.notes)) hit.notes = [hit.notes, n.notes].filter(Boolean).join('\n');
+    delete hit._h; keys(hit).forEach(k => idx.set(k, hit)); updated++;
+  }
+  return {added, updated};
+}
+
+function vcard(list) {
+  const v = s => String(s || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1');
+  return list.map(c => {
+    const parts = c.nameless ? [] : c.name.split(' ');
+    const last = parts.length > 1 ? parts.pop() : '';
+    const L = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${v(c.name)}`, `N:${v(last)};${v(parts.join(' '))};;;`];
+    if (c.org) L.push(`ORG:${v(c.org)}`);
+    if (c.title) L.push(`TITLE:${v(c.title)}`);
+    (c.phones || []).forEach(p => L.push(`TEL;TYPE=${({mobile: 'CELL', home: 'HOME', work: 'WORK', fax: 'FAX', main: 'MAIN'})[p.l] || 'VOICE'}:${p.v}`));
+    (c.emails || []).forEach(e => L.push(`EMAIL;TYPE=${e.l === 'work' ? 'WORK' : 'INTERNET'}:${e.v}`));
+    if (c.linkedin) L.push(`URL:${c.linkedin}`);
+    if (c.notes) L.push(`NOTE:${v(c.notes)}`);
+    L.push('END:VCARD');
+    return L.join('\r\n');
+  }).join('\r\n') + '\r\n';
+}
+
+function download(name, text, type) {
+  const url = URL.createObjectURL(new Blob([text], {type}));
+  const a = Object.assign(document.createElement('a'), {href: url, download: name});
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
+/* ---------- router ---------- */
+function render() {
+  document.querySelectorAll('.tabbar button').forEach(b => b.classList.toggle('on', b.dataset.tab === view.tab || (view.tab === 'detail' && b.dataset.tab === 'list')));
+  if (view.tab === 'list') renderList();
+  else if (view.tab === 'detail') renderDetail();
+  else if (view.tab === 'add') renderEdit({name: '', org: '', title: '', phones: [], emails: [], tags: [], notes: ''});
+  else renderSettings();
+  if (view.tab !== 'list') scrollTo(0, 0);
+}
+document.querySelectorAll('.tabbar button').forEach(b => b.onclick = () => { if (!KEY) return; view.tab = b.dataset.tab; view.edit = false; render(); });
+
+if (!window.isSecureContext || !crypto.subtle) {
+  $('#app').innerHTML = '<div class="lock center"><h1>Connections</h1><p class="sub">Open this app over https so encryption is available.</p></div>';
+} else {
+  renderLock();
+}
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
