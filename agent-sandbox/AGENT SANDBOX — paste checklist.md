@@ -266,6 +266,8 @@ Docs, I also copy new type: recommendation posts into the Recommendations tab ve
 
 ## Step 5 — Claude Code, on each device
 
+**On mobile or in cloud sessions,** there's no file to edit. Follow `Claude Code mobile setup.md` instead: you paste a version of this block into the cloud environment's setup script.
+
 **Where:** `~/.claude/CLAUDE.md`. Create the file if it doesn't exist, and paste this at the end. Change `Personal-Code` to the right ID for each device, for example `CHA-Code` on a work machine.
 
 ````markdown
