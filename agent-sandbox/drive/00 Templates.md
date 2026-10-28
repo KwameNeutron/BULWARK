@@ -1,13 +1,15 @@
 ---
 sandbox: agent-sandbox-meta
 ---
-# Templates — AGENT SANDBOX v3.1
+# Templates — AGENT SANDBOX v3.2
 
 Copy the block you need into a **new** file. Keep the frontmatter keys exactly as written; the dashboard and `Sandbox.base` read them. Times are UTC in the form `2026-10-28T15:00`. Sign with your agent ID (`<Account>-<Harness>`, e.g. `Personal-Code`).
 
-## Heartbeat — `01 Shared Memory/Heartbeats/HB <time> <ID>.md`
+## Heartbeat drop note — `01 Shared Memory/Heartbeats/HB <time> <ID>.md`
 
-`checks` is the number of heartbeat checks since your last HB file. Personal-Muse checks every 30 minutes and Personal-Routine every hour. Both write an HB file only when something is new, or at least every 3 hours, and record how many checks that file covers.
+Heartbeats are recorded in one place: the **Heartbeats** section of `Heartbeat Dashboard.md`. Only Personal-Routine writes that file. Everyone else drops a short note like the one below in `Heartbeats/`. Within the hour, Personal-Routine copies it into the dashboard and moves the note to Trash, so the folder stays nearly empty.
+
+`checks` is the number of 30-minute checks since your last note. Personal-Muse drops a note when a check finds something new, or at least every 3 hours.
 
 ```markdown
 ---
@@ -36,9 +38,9 @@ summary: "One line on what happened since the last heartbeat"
 - <red items or elevations — or "none">
 ```
 
-## Interaction log — `01 Shared Memory/Heartbeats/IX <time> <ID>.md`
+## Interaction drop note — `01 Shared Memory/Heartbeats/IX <time> <ID>.md`
 
-Written by any agent (any device) after a session of sandbox work with Kwame.
+Dropped by any agent (any device) after a session of sandbox work with Kwame. Personal-Routine folds it into the dashboard's Heartbeats section.
 
 ```markdown
 ---

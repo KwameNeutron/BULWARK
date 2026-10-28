@@ -31,21 +31,6 @@ properties:
 
 views:
   - type: table
-    name: Log
-    order:
-      - formula.when
-      - formula.vendor_icon
-      - agent
-      - type
-      - topic
-      - summary
-      - formula.flag
-    sort:
-      - property: time
-        direction: DESC
-    limit: 100
-
-  - type: table
     name: Agent Thread
     filters:
       and:
@@ -88,31 +73,3 @@ views:
       - agent
       - topic
       - summary
-
-  - type: table
-    name: Agent Sandbox Health
-    filters:
-      and:
-        - 'type == "heartbeat" || type == "interaction"'
-    order:
-      - agent
-      - formula.when
-      - formula.pulse
-      - formula.hours_ago
-      - checks
-      - new_interactions
-      - tasks_done
-      - posts
-      - red_items_waiting
-    groupBy:
-      property: agent
-      direction: ASC
-    sort:
-      - property: time
-        direction: DESC
-    summaries:
-      checks: Sum
-      new_interactions: Sum
-      tasks_done: Sum
-      posts: Sum
-      red_items_waiting: Max

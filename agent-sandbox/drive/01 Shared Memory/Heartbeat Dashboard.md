@@ -1,32 +1,34 @@
 ---
 sandbox: agent-sandbox-meta
-generated_by: Personal-Code
-generated_at: 2026-10-28T16:30
-next_refresh: "Personal-Routine, every 3 hours"
+written_by: Personal-Code
+written_at: 2026-10-28T17:15
+maintained_by: "Personal-Routine (hourly)"
 ---
 # Heartbeat Dashboard
 
-> [!summary] Status at 2026-10-28 16:30 UTC
+> [!summary] Status at 2026-10-28 17:15 UTC
 > **Waiting on you:** nothing.
-> **Heartbeats:** not started yet. Personal-Routine runs every 3 hours. Personal-Muse starts once you save its Goal (Protocol v3, Part D).
+> **Heartbeats:** not started. Personal-Routine starts when you create the hourly Chat task. Personal-Muse starts when you save its 30-minute Goal (Protocol v3.2, sections 3–4).
 > **Open tasks:** 1. T0001 has waited on Muse for 20 days.
 
-*The Claude heartbeat (Personal-Routine) regenerates this file every 3 hours, and the previous copy goes to `06 Archive`. Don't edit it by hand. Live views of the same data are in [[Sandbox.base]].*
+*This is the single home for every heartbeat. Only Personal-Routine writes this file. Other agents drop notes in `Heartbeats/`, and each hour Personal-Routine copies them in here and clears the folder. Don't edit this file by hand.*
 
 ---
 
-## Log
+## Heartbeats
 
-All heartbeat reports, interaction logs and thread contributions, newest first.
+Newest first. Rows stay for 7 days, then roll up into the daily totals below.
 
-| When (UTC) | Agent | Type | Summary | File |
-|---|---|---|---|---|
-| Oct 28 16:30 | Personal-Code | post | Spot check: T0001 has had no reply from Muse for 20 days | [[POST 2026-10-28T1630Z Personal-Code t0001-pilot]] |
-| Oct 28 16:30 | Personal-Code | interaction | Kwame asked for protocol v3 (Recommendations, heartbeats, thread, dashboard, IDs, rename) | [[IX 2026-10-28T1630Z Personal-Code]] |
+| Time (UTC) | Agent | Kind | Checks | New | Done | Posts | Elev | Red | Summary |
+|---|---|---|---|---|---|---|---|---|---|
+| Oct 28 17:15 | Personal-Code | interaction | – | 1 | 0 | 0 | 0 | 0 | Kwame asked for v3.1/v3.2: Muse checks every 30 min, Claude every hour, all heartbeats in this one file. |
+| Oct 28 16:30 | Personal-Code | interaction | – | 1 | 0 | 1 | 0 | 0 | Kwame asked for protocol v3 (Recommendations tab, heartbeats, Agent Thread, dashboard, agent IDs, rename to AGENT SANDBOX). Posted the T0001 spot check. |
 
-Live log (in Obsidian):
+### Daily totals
 
-![[Sandbox.base#Log]]
+| Date | Muse checks | Routine checks | Interactions | Posts | Tasks done |
+|---|---|---|---|---|---|
+| 2026-10-28 | 0 | 0 | 2 | 1 | 0 |
 
 ---
 
@@ -34,43 +36,43 @@ Live log (in Obsidian):
 
 ### Agent pulse
 
-| Agent | Role | Last heartbeat | Pulse | Beats in last 24h (expected 8) |
+| Agent | Role | Last row | Pulse | Checks, last 24h |
 |---|---|---|---|---|
-| Personal-Routine | Claude heartbeat | not yet run | ⚪ scheduled | 0 / 8 |
-| Personal-Muse | Muse heartbeat | never | 🔴 Goal not set | 0 / 8 |
-| Personal-Code | Claude Code (this device) | IX at Oct 28 16:30 | ⚪ on demand | n/a |
+| Personal-Routine | Claude heartbeat, hourly | none yet | 🔴 Chat task not created | 0 / 24 |
+| Personal-Muse | Muse heartbeat, every 30 min | none yet | 🔴 Goal not saved | 0 / 48 |
+| Personal-Code | Claude Code, on demand | Oct 28 17:15 | ⚪ not a heartbeat agent | n/a |
 
-🟢 under 4 hours since last beat · 🟡 4–7 hours · 🔴 over 7 hours, or never · ⚪ not a heartbeat agent, or not started
+🟢 under 3.5 h since last row · 🟡 3.5 to 6.5 h · 🔴 over 6.5 h, or no row yet · ⚪ on demand
 
 ### Key numbers
 
 | Metric | Now |
 |---|---|
-| Heartbeat coverage, last 24h | 0% (0 of 16 expected) |
+| Coverage, last 24h | Muse 0% (0/48) · Routine 0% (0/24) |
 | Open tasks | 1 (T0001, OPEN, 20 days) |
 | Thread topics open | 1 |
 | Elevations waiting on you | 0 |
 | Red items waiting on you | 0 |
 | Recommendations pending | 0 |
 
-### Heartbeats per day
+### Checks per day
 
 ```mermaid
 xychart-beta
-  title "Heartbeats per day (UTC)"
+  title "Heartbeat checks per day (UTC)"
   x-axis ["Oct 22", "Oct 23", "Oct 24", "Oct 25", "Oct 26", "Oct 27", "Oct 28"]
-  y-axis "Heartbeats" 0 --> 16
+  y-axis "Checks" 0 --> 48
   bar [0, 0, 0, 0, 0, 0, 0]
-  line [16, 16, 16, 16, 16, 16, 16]
+  line [0, 0, 0, 0, 0, 0, 0]
 ```
 
-*The bars show heartbeats written. The line shows the target: 2 heartbeat agents × 8 per day.*
+*The bars are Personal-Routine, with a target of 24 a day. The line is Personal-Muse, with a target of 48 a day.*
 
-### Contributions by agent, last 7 days
+### Rows by agent, last 7 days
 
 ```mermaid
 pie showData
-  title Files contributed by agent
+  title Heartbeat rows by agent
   "Personal-Code" : 2
 ```
 
@@ -78,9 +80,9 @@ pie showData
 
 ```mermaid
 pie showData
-  title Files by type
-  "interaction" : 1
-  "post" : 1
+  title Contributions by type
+  "interaction" : 2
+  "thread post" : 1
 ```
 
 ### Task flow
@@ -91,6 +93,6 @@ flowchart LR
   PROG -.-> BLOCKED["BLOCKED · 0"]
 ```
 
-Live health view, grouped by agent (in Obsidian):
+### Waiting on Kwame (live, in Obsidian)
 
-![[Sandbox.base#Agent Sandbox Health]]
+![[Sandbox.base#Waiting on Kwame]]
