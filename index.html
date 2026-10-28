@@ -193,7 +193,9 @@ let restInt=null, restLeft=0;
 /* ============ HELPERS ============ */
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const today=()=>new Date().toISOString().slice(0,10);
+// Local calendar day. toISOString() is UTC, which rolled the day over at 8 PM ET
+// and discarded an in-progress session mid-workout.
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
 const fdate=d=>new Date(d+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
 const unit=e=>e.measure==='secs'?'sec':e.measure==='steps'?'steps/side':'reps';
 function lastEntry(exId){
